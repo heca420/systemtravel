@@ -462,18 +462,6 @@
   </div>
 </div>
 
-<div class="lock-screen" id="lockScreen" style="display:none">
-  <div class="lock-box">
-    <img id="lockLogo" class="lock-logo" alt="Logo" />
-    <h2 class="lock-title" id="lockTitle">Masukkan PIN</h2>
-    <p class="lock-sub" id="lockSub">Kunci keamanan data jamaah</p>
-    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="lockPinInput" class="lock-pin-input" placeholder="••••" />
-    <div class="lock-error" id="lockError" style="display:none"></div>
-    <button class="btn-primary" id="lockSubmitBtn" style="width:100%;margin-top:14px;justify-content:center">Buka</button>
-    <button class="lock-reset-link" id="lockResetBtn">Lupa PIN? Reset kunci (data jamaah tetap aman)</button>
-  </div>
-</div>
-
 <!-- ========== MOBILE HAMBURGER BUTTON ========== -->
 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka menu" aria-expanded="false">☰</button>
 
@@ -535,12 +523,6 @@
     </div>
     <div class="sidebar-note" id="mobileLastBackupNote"></div>
   </div>
-
-  <!-- Keamanan -->
-  <div style="border-top:1px solid rgba(255,255,255,.18);padding-top:14px">
-    <div class="sidebar-label">Keamanan</div>
-    <div class="sidebar-btn-row" id="mobileSecurityButtons"></div>
-  </div>
 </nav>
 
 <div class="app-shell" id="appShell">
@@ -587,11 +569,6 @@
         <input type="file" id="restoreFileInput" accept="application/json" style="display:none" />
       </div>
       <div class="sidebar-note" id="lastBackupNote"></div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-label">Keamanan</div>
-      <div class="sidebar-btn-row" id="securityButtons"></div>
     </div>
   </aside>
 
@@ -1161,22 +1138,6 @@ function syncMobileLastBackupNote() {
   if (src && dst) dst.textContent = src.textContent;
 }
 
-function syncMobileSecurityButtons() {
-  const src = document.getElementById('securityButtons');
-  const dst = document.getElementById('mobileSecurityButtons');
-  if (!src || !dst) return;
-  dst.innerHTML = src.innerHTML;
-  const map = {
-    btnChangePin:  handleChangePin,
-    btnLockNow:    handleLockNow,
-    btnDisablePin: handleDisablePin,
-    btnSetupPin:   handleSetupPin,
-  };
-  Object.entries(map).forEach(([id, fn]) => {
-    const el = dst.querySelector('#' + id);
-    if (el) el.addEventListener('click', fn);
-  });
-}
 let groups = {};
 let activeGroupId = null;
 let jamaah = [];
@@ -1725,125 +1686,6 @@ function updateLastBackupNote() {
   const d = new Date(raw);
   note.textContent = 'Backup terakhir: ' + formatTanggal(raw.slice(0,10)) + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   syncMobileLastBackupNote();
-}
-
-/* ============ Kunci PIN ============ */
-const PIN_KEY = 'manifest_pin_hash_v1';
-const UNLOCK_SESSION_KEY = 'manifest_unlocked_session_v1';
-
-async function sha256Hex(text) {
-  const enc = new TextEncoder().encode(text);
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function initLockScreen() {
-  const logoSrc = document.querySelector('.sidebar-logo img') ? document.querySelector('.sidebar-logo img').src : '';
-  document.getElementById('lockLogo').src = logoSrc;
-
-  const hasPin = !!localStorage.getItem(PIN_KEY);
-  const sessionUnlocked = sessionStorage.getItem(UNLOCK_SESSION_KEY) === '1';
-  const screen = document.getElementById('lockScreen');
-  if (!hasPin || sessionUnlocked) { screen.style.display = 'none'; return; }
-
-  document.getElementById('lockTitle').textContent = 'Masukkan PIN';
-  document.getElementById('lockSub').textContent = 'Kunci keamanan data jamaah';
-  document.getElementById('lockPinInput').value = '';
-  document.getElementById('lockError').style.display = 'none';
-  screen.style.display = 'flex';
-  setTimeout(() => document.getElementById('lockPinInput').focus(), 60);
-}
-
-async function handleLockSubmit() {
-  const pin = document.getElementById('lockPinInput').value.trim();
-  const errEl = document.getElementById('lockError');
-  if (!/^\d{4,6}$/.test(pin)) { errEl.textContent = 'PIN harus 4-6 digit angka.'; errEl.style.display = 'block'; return; }
-
-  const hash = await sha256Hex(pin);
-  const stored = localStorage.getItem(PIN_KEY);
-  if (hash === stored) {
-    sessionStorage.setItem(UNLOCK_SESSION_KEY, '1');
-    document.getElementById('lockScreen').style.display = 'none';
-  } else {
-    errEl.textContent = 'PIN salah. Coba lagi.';
-    errEl.style.display = 'block';
-    document.getElementById('lockPinInput').value = '';
-    document.getElementById('lockPinInput').focus();
-  }
-}
-
-async function handleLockResetClick() {
-  const ok = await customConfirm('Reset kunci PIN? Data jamaah TIDAK akan terhapus. Tapi setelah ini, siapa pun yang membuka file/perangkat ini bisa langsung masuk tanpa PIN sampai kamu atur PIN baru lewat menu Keamanan. Lanjutkan?');
-  if (!ok) return;
-  localStorage.removeItem(PIN_KEY);
-  sessionStorage.removeItem(UNLOCK_SESSION_KEY);
-  document.getElementById('lockScreen').style.display = 'none';
-  updateSecuritySidebar();
-}
-
-function updateSecuritySidebar() {
-  const hasPin = !!localStorage.getItem(PIN_KEY);
-  const wrap = document.getElementById('securityButtons');
-  if (hasPin) {
-    wrap.innerHTML = `
-      <button class="sb-btn" id="btnChangePin">✎ Ubah PIN</button>
-      <button class="sb-btn" id="btnLockNow">🔒 Kunci Sekarang</button>
-      <button class="sb-btn danger" id="btnDisablePin">Nonaktifkan Kunci</button>
-    `;
-    document.getElementById('btnChangePin').addEventListener('click', handleChangePin);
-    document.getElementById('btnLockNow').addEventListener('click', handleLockNow);
-    document.getElementById('btnDisablePin').addEventListener('click', handleDisablePin);
-  } else {
-    wrap.innerHTML = `<button class="sb-btn" id="btnSetupPin">🔒 Aktifkan Kunci PIN</button>`;
-    document.getElementById('btnSetupPin').addEventListener('click', handleSetupPin);
-  }
-  syncMobileSecurityButtons();
-}
-
-async function handleSetupPin() {
-  const p1 = await customPrompt('Buat PIN baru (4-6 digit angka)', '');
-  if (p1 === null) return;
-  if (!/^\d{4,6}$/.test(p1)) { await customConfirm('PIN harus 4-6 digit angka.'); return; }
-  const p2 = await customPrompt('Ulangi PIN yang sama untuk konfirmasi', '');
-  if (p2 === null) return;
-  if (p1 !== p2) { await customConfirm('PIN tidak sama. Silakan coba lagi dari awal.'); return; }
-  const hash = await sha256Hex(p1);
-  localStorage.setItem(PIN_KEY, hash);
-  sessionStorage.setItem(UNLOCK_SESSION_KEY, '1');
-  updateSecuritySidebar();
-  await customConfirm('Kunci PIN berhasil diaktifkan. Aplikasi akan meminta PIN ini setiap kali dibuka di sesi/browser baru.');
-}
-
-async function handleChangePin() {
-  const old = await customPrompt('Masukkan PIN saat ini', '');
-  if (old === null) return;
-  const oldHash = await sha256Hex(old);
-  if (oldHash !== localStorage.getItem(PIN_KEY)) { await customConfirm('PIN saat ini salah.'); return; }
-  const p1 = await customPrompt('PIN baru (4-6 digit angka)', '');
-  if (p1 === null) return;
-  if (!/^\d{4,6}$/.test(p1)) { await customConfirm('PIN harus 4-6 digit angka.'); return; }
-  const p2 = await customPrompt('Ulangi PIN baru', '');
-  if (p2 === null) return;
-  if (p1 !== p2) { await customConfirm('PIN tidak sama. Silakan coba lagi dari awal.'); return; }
-  const hash = await sha256Hex(p1);
-  localStorage.setItem(PIN_KEY, hash);
-  await customConfirm('PIN berhasil diubah.');
-}
-
-async function handleDisablePin() {
-  const pin = await customPrompt('Masukkan PIN untuk menonaktifkan kunci', '');
-  if (pin === null) return;
-  const hash = await sha256Hex(pin);
-  if (hash !== localStorage.getItem(PIN_KEY)) { await customConfirm('PIN salah.'); return; }
-  localStorage.removeItem(PIN_KEY);
-  sessionStorage.removeItem(UNLOCK_SESSION_KEY);
-  updateSecuritySidebar();
-  await customConfirm('Kunci PIN dinonaktifkan.');
-}
-
-function handleLockNow() {
-  sessionStorage.removeItem(UNLOCK_SESSION_KEY);
-  initLockScreen();
 }
 
 function handleRestoreClick() {
@@ -3069,8 +2911,6 @@ async function bootApp() {
   await loadData();
   renderTable();
   updateLastBackupNote();
-  updateSecuritySidebar();
-  initLockScreen();
   initSidebarToggle();
   initMobileDrawer();
 }
@@ -3087,10 +2927,6 @@ document.getElementById('btnProfilePhotoPick').addEventListener('click', () => d
 document.getElementById('profilePhotoInput').addEventListener('change', handleProfilePhotoInputChange);
 document.getElementById('btnProfilePhotoRemove').addEventListener('click', handleProfilePhotoRemove);
 document.getElementById('loginPassword').addEventListener('keydown', e => { if (e.key === 'Enter') handleLoginSubmit(); });
-
-document.getElementById('lockSubmitBtn').addEventListener('click', handleLockSubmit);
-document.getElementById('lockPinInput').addEventListener('keydown', e => { if (e.key === 'Enter') handleLockSubmit(); });
-document.getElementById('lockResetBtn').addEventListener('click', handleLockResetClick);
 
 (async () => {
   const alreadyLoggedIn = await initLoginScreen();

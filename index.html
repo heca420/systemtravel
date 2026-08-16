@@ -1031,26 +1031,6 @@ document.getElementById('gdCancel').addEventListener('click', () => gdClose(null
 document.getElementById('gdInput').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('gdOk').click(); });
 document.getElementById('gdOverlay').addEventListener('click', function(e) { if (e.target === this) gdClose(null); });
 
-const SEED_FLAG_KEY = 'manifest_seed_amintahir_v1';
-const SEED_GROUP_ID = 'g_seed_amintahir';
-function maybeInjectSeedGroup() {
-  if (localStorage.getItem(SEED_FLAG_KEY)) return;
-  if (!groups[SEED_GROUP_ID]) {
-    groups[SEED_GROUP_ID] = {
-      label: 'Reguler Tgk M Amin Tahir',
-      namaRombongan: 'PT. RAHMADINA TOUR & TRAVEL',
-      tglBerangkat: '2026-09-15',
-      tglPulang: '2026-09-28',
-      kuotaJamaah: 8,
-      hargaPaket: 0,
-      kwitansiCounter: 0,
-      payments: {},
-      jamaah: [{"id": "g2_1", "namaPaspor": "M AMIN TAHIR", "noPaspor": "E1165054", "lp": "L", "tempatLahir": "ALUE BAGOK", "tanggalLahir": "1978-05-15", "issuingOffice": "BANDA ACEH", "dateOfIssue": "2022-11-18", "dateOfExpiry": "2032-11-18", "namaKtp": "M AMIN TAHIR", "nik": "1107171505780003", "icv": "YES"}, {"id": "g2_2", "namaPaspor": "ANISAH BANTA RISYAH ABDULLAH", "noPaspor": "X9583037", "lp": "P", "tempatLahir": "BANDA ACEH", "tanggalLahir": "1974-07-20", "issuingOffice": "BANDA ACEH", "dateOfIssue": "2026-07-09", "dateOfExpiry": "2031-07-09", "namaKtp": "ANISAH", "nik": "", "icv": "YES"}, {"id": "g2_3", "namaPaspor": "MARDHIAH A JALIL", "noPaspor": "X9583089", "lp": "P", "tempatLahir": "TONG PERIA", "tanggalLahir": "1967-08-14", "issuingOffice": "BANDA ACEH", "dateOfIssue": "2026-07-09", "dateOfExpiry": "2031-07-09", "namaKtp": "MARDHIAH", "nik": "1107245408670002", "icv": "YES"}, {"id": "g2_4", "namaPaspor": "RUSLAN BIN JUMAT CUT BARAT", "noPaspor": "X9583099", "lp": "L", "tempatLahir": "ACEH BESAR", "tanggalLahir": "1957-12-31", "issuingOffice": "BANDA ACEH", "dateOfIssue": "2026-07-09", "dateOfExpiry": "2031-07-09", "namaKtp": "RUSLAN", "nik": "", "icv": "YES"}, {"id": "g2_5", "namaPaspor": "SURYANI ABDULLAH", "noPaspor": "E6690179", "lp": "P", "tempatLahir": "ACEH BESAR", "tanggalLahir": "1975-09-09", "issuingOffice": "BANDA ACEH", "dateOfIssue": "2024-02-28", "dateOfExpiry": "2034-02-28", "namaKtp": "SURYANI", "nik": "1106104909750003", "icv": "YES"}, {"id": "g2_6", "namaPaspor": "HASBI ABDUL JALIL USMAN", "noPaspor": "E6690138", "lp": "L", "tempatLahir": "TONG PERIA", "tanggalLahir": "1963-12-22", "issuingOffice": "BANDA ACEH", "dateOfIssue": "2024-02-28", "dateOfExpiry": "2034-02-28", "namaKtp": "HASBI", "nik": "1106102212630002", "icv": "YES"}, {"id": "g2_7", "namaPaspor": "NURUL HIDAYAH", "noPaspor": "X9580487", "lp": "P", "tempatLahir": "BANDA ACEH", "tanggalLahir": "1998-04-26", "issuingOffice": "BANDA ACEH", "dateOfIssue": "2026-06-12", "dateOfExpiry": "2031-06-12", "namaKtp": "NURUL HIDAYAH", "nik": "1171016604980002", "icv": "YES"}, {"id": "g2_8", "namaPaspor": "SRIYATUN MUH SAMIADI", "noPaspor": "X9580488", "lp": "P", "tempatLahir": "KARANGWETAN", "tanggalLahir": "1972-12-31", "issuingOffice": "BANDA ACEH", "dateOfIssue": "2026-06-12", "dateOfExpiry": "2031-06-12", "namaKtp": "SRIYATUN", "nik": "1171017112720003", "icv": "YES"}]
-    };
-    activeGroupId = SEED_GROUP_ID;
-  }
-  localStorage.setItem(SEED_FLAG_KEY, '1');
-}
 
 const STORAGE_KEY = 'manifest_jamaah_groups_v1';
 const SIDEBAR_KEY = 'manifest_sidebar_collapsed_v1';

@@ -1267,6 +1267,7 @@ async function updateUserProfile(session) {
     emailEl.removeAttribute('title');
     roleEl.textContent = '';
     avatarEl.textContent = '?';
+    syncMobileProfile();
     return;
   }
   const profile = await fetchMyProfile();
@@ -1275,6 +1276,7 @@ async function updateUserProfile(session) {
   emailEl.title = email;
   roleEl.textContent = 'Staf';
   setAvatarBoxContent(avatarEl, profile && profile.avatar_url, displayName);
+  syncMobileProfile();
 }
 
 async function handleLogout() {
@@ -1632,6 +1634,7 @@ function renderGroupSelect() {
   sel.innerHTML = Object.keys(groups).map(id =>
     `<option value="${id}" ${id === activeGroupId ? 'selected' : ''}>${escapeHtml(groups[id].label)}</option>`
   ).join('');
+  syncMobileGroupSelect();
 }
 
 // Catatan: saveData() sekarang HANYA menyinkronkan field level-gelombang
@@ -1736,9 +1739,10 @@ function handleBackup() {
 function updateLastBackupNote() {
   const note = document.getElementById('lastBackupNote');
   const raw = localStorage.getItem(BACKUP_TIME_KEY);
-  if (!raw) { note.textContent = 'Belum pernah backup.'; return; }
+  if (!raw) { note.textContent = 'Belum pernah backup.'; syncMobileLastBackupNote(); return; }
   const d = new Date(raw);
   note.textContent = 'Backup terakhir: ' + formatTanggal(raw.slice(0,10)) + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  syncMobileLastBackupNote();
 }
 
 /* ============ Kunci PIN ============ */
@@ -1811,6 +1815,7 @@ function updateSecuritySidebar() {
     wrap.innerHTML = `<button class="sb-btn" id="btnSetupPin">🔒 Aktifkan Kunci PIN</button>`;
     document.getElementById('btnSetupPin').addEventListener('click', handleSetupPin);
   }
+  syncMobileSecurityButtons();
 }
 
 async function handleSetupPin() {
@@ -3085,6 +3090,7 @@ async function bootApp() {
   updateSecuritySidebar();
   initLockScreen();
   initSidebarToggle();
+  initMobileDrawer();
 }
 
 document.getElementById('loginSubmitBtn').addEventListener('click', handleLoginSubmit);

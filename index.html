@@ -2010,18 +2010,32 @@ async function applyBulkUpdate() {
   const ok = await customConfirm(`Terapkan perubahan ke ${selectedIds.size} jamaah terpilih?`);
   if (!ok) return;
 
-  jamaah = jamaah.map(j => {
-    if (!selectedIds.has(j.id)) return j;
+  const targets = jamaah.filter(j => selectedIds.has(j.id));
+  const failed = [];
+
+  for (const j of targets) {
     const updated = { ...j };
     if (newVisa) updated.visaStatus = newVisa;
     if (newTiket) updated.tiketStatus = newTiket;
-    return updated;
-  });
+    try {
+      await sbUpdatePilgrim(updated.id, updated);
+      jamaah = jamaah.map(x => x.id === updated.id ? updated : x);
+    } catch (e) {
+      failed.push({ nama: j.namaPaspor, error: e.message });
+    }
+  }
 
-  saveData();
+  groups[activeGroupId].jamaah = jamaah;
   renderTable();
   renderDashboard();
   closeBulkModal();
+
+  if (failed.length > 0) {
+    await customConfirm(
+      `${failed.length} dari ${targets.length} data gagal disimpan ke server:\n` +
+      failed.map(f => `- ${f.nama}: ${f.error}`).join('\n')
+    );
+  }
 }
 
 let dragSourceId = null;
@@ -2224,14 +2238,27 @@ async function handleDelete(id) {
   renderDashboard();
 }
 
-function handleEicvChange(id, value, selectEl) {
+async function handleEicvChange(id, value, selectEl) {
   const j = jamaah.find(x => x.id === id);
   if (!j) return;
+  const previous = j.icv;
   j.icv = value;
-  saveData();
   if (selectEl) {
     selectEl.classList.remove('eicv-ok', 'eicv-no');
     selectEl.classList.add(value === 'Sudah Vaksin' ? 'eicv-ok' : 'eicv-no');
+  }
+  try {
+    await sbUpdatePilgrim(id, j);
+  } catch (e) {
+    // Gagal simpan ke server -> kembalikan tampilan ke nilai semula
+    // supaya UI tidak menampilkan data yang sebenarnya tidak tersimpan.
+    j.icv = previous;
+    if (selectEl) {
+      selectEl.value = previous;
+      selectEl.classList.remove('eicv-ok', 'eicv-no');
+      selectEl.classList.add(previous === 'Sudah Vaksin' ? 'eicv-ok' : 'eicv-no');
+    }
+    await customConfirm('Gagal menyimpan status vaksin ke server: ' + e.message);
   }
 }
 

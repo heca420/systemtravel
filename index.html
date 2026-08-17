@@ -3227,12 +3227,6 @@ function cetakKwitansiKolektif(savedRecords, meta) {
             (${terbilangRupiah(grandSisaSetelah)}).`
          : ''}`;
 
-  // ── Nomor kwitansi tambahan (jika lebih dari 1 record) ───────────────────
-  const nomorTambahan = savedRecords.length > 1
-    ? savedRecords.slice(1).map(({ record: r }, i) =>
-        formatNomorKwitansi(r, g, groupIndex > 0 ? groupIndex : 1)
-      ).join(', ')
-    : '';
 
   const html = `
     <div class="kw-box">
@@ -3243,14 +3237,13 @@ function cetakKwitansiKolektif(savedRecords, meta) {
           <div class="kw-company-address">${escapeHtml(KWITANSI_ALAMAT_1)}<br>${escapeHtml(KWITANSI_ALAMAT_2)}</div>
         </div>
       </div>
-      <div class="kw-title2">Tanda Terima / Kwitansi Kolektif</div>
+      <div class="kw-title2">Tanda Terima / Kwitansi</div>
 
       <div class="kw-meta-row">
         <div class="kw-meta-label">Nomor</div>
         <div class="kw-meta-colon">:</div>
         <div class="kw-meta-val">
           ${escapeHtml(nomorUtama)}
-          ${nomorTambahan ? `<div style="font-size:11px;color:#555;margin-top:2px">Ref. tambahan: ${escapeHtml(nomorTambahan)}</div>` : ''}
         </div>
       </div>
       <div class="kw-meta-row">
@@ -3270,11 +3263,6 @@ function cetakKwitansiKolektif(savedRecords, meta) {
         <div class="kw-meta-colon">:</div>
         <div class="kw-meta-val">${escapeHtml(meta.metode)}</div>
       </div>
-
-      <div class="kw-payment-intro">Untuk Pembayaran (<i>Payment</i>) Umrah A.n</div>
-      <ol class="kw-payment-list">
-        ${memberRows.map(r => `<li>${escapeHtml(r.namaLabel)}</li>`).join('')}
-      </ol>
 
       <div style="font-size:12.5px;font-family:'Helvetica Neue',Arial,sans-serif;margin-bottom:8px">
         Rincian pembayaran per anggota:

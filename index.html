@@ -11,7 +11,7 @@
 <style>
   :root {
     --ink: #1c2b2e;
-    --paper: #f6f3ec;
+    --paper: #f2ddae;
     --brass: #a9863a;
     --brass-dark: #8a6d2c;
     --teal: #0f4c46;
@@ -293,14 +293,34 @@
   .mini-dp { background: #fbf0da; color: #8a6d2c; }
   .mini-belum { background: #f6e2df; color: var(--danger); }
 
-  .month-block { padding: 9px 0; border-bottom: 1px solid var(--line); }
-  .month-block:last-child { border-bottom: none; }
-  .month-row { display: flex; align-items: center; gap: 12px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
-  .month-label { width: 160px; flex-shrink: 0; font-weight: 600; color: var(--teal); text-transform: capitalize; }
-  .month-track { flex: 1; background: #eee8d9; border-radius: 20px; height: 14px; overflow: hidden; }
-  .month-fill { height: 100%; background: var(--brass); border-radius: 20px 0 0 20px; }
-  .month-count { width: 90px; text-align: right; color: #4b5c58; flex-shrink: 0; }
-  .month-gel-count { font-size: 11px; color: #8a8272; margin: 5px 0 0 172px; line-height: 1.4; }
+  /* ---- Global summary table ---- */
+  .gs-table { width: 100%; border-collapse: collapse; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+  .gs-table thead tr { background: var(--teal); }
+  .gs-table thead th { padding: 10px 14px; font-size: 11px; font-weight: 700; letter-spacing: .045em; text-transform: uppercase; color: rgba(255,255,255,.9); text-align: left; white-space: nowrap; border: none; }
+  .gs-table thead th.num { text-align: right; }
+  .gs-table tbody tr { border-bottom: 1px solid var(--line); transition: background .13s; }
+  .gs-table tbody tr:hover { background: #f4f1ea; }
+  .gs-table tbody tr.gs-wave-row { background: var(--teal-light); }
+  .gs-table tbody tr.gs-wave-row:hover { background: #d8e9e5; }
+  .gs-table tbody tr.gs-total-row { background: #f0ede5; font-weight: 700; border-top: 2px solid var(--brass); }
+  .gs-table td { padding: 9px 14px; vertical-align: middle; }
+  .gs-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .gs-wave-name { font-weight: 700; color: var(--teal); font-size: 13px; }
+  .gs-group-list { font-size: 11px; color: #7a7060; margin-top: 3px; line-height: 1.4; }
+  .gs-bar-cell { min-width: 100px; }
+  .gs-bar-wrap { background: #e4dfd3; border-radius: 20px; height: 8px; overflow: hidden; margin-top: 2px; }
+  .gs-bar-fill { height: 100%; border-radius: 20px; background: var(--teal); }
+  .gs-pay-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+  .gs-pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+  .gs-pill-lunas { background: #e2f2e6; color: #1a7038; }
+  .gs-pill-dp    { background: #fbf0da; color: #8a6d2c; }
+  .gs-pill-belum { background: #f6e2df; color: var(--danger); }
+  .gs-stat-strip { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .gs-stat-card  { flex: 1; min-width: 130px; background: var(--teal-light); border-radius: 6px; padding: 14px 18px; border: 1px solid #c8ddd9; }
+  .gs-stat-card .gs-sc-val  { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 26px; font-weight: 700; color: var(--teal); line-height: 1; }
+  .gs-stat-card .gs-sc-cap  { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: #5b7470; margin-bottom: 6px; }
+  .gs-stat-card .gs-sc-sub  { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; color: #7a9490; margin-top: 4px; }
+  .gs-section-label { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6b6152; margin: 0 0 10px; }
 
   .stat-strip { display: flex; gap: 12px; flex-wrap: wrap; margin: 0 0 20px; align-items: center; }
   .stat-card { background: var(--teal-light); border-radius: 4px; padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
@@ -642,8 +662,7 @@
 
       <div class="section-block" style="border-color:var(--brass);border-width:1.5px">
         <h3 class="section-title">Ringkasan Seluruh Jamaah — Semua Gelombang</h3>
-        <div class="stat-grid" id="globalStatGrid" style="margin-bottom:18px"></div>
-        <h4 style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:#6b6152;margin:0 0 10px">Jumlah Jamaah Berangkat per Bulan</h4>
+        <div id="globalStatGrid"></div>
         <div id="monthlyBreakdown"></div>
       </div>
 
@@ -808,6 +827,11 @@
           <option value="Sudah Terbit">Sudah Terbit</option>
         </select>
       </div>
+      <div class="span-2" style="border-top:1px dashed var(--line);padding-top:12px;margin-top:4px">
+        <label class="field-label">Harga Paket Khusus / Promo (Rp) <span style="text-transform:none;font-weight:400;color:#8a8272">— kosongkan jika ikut harga group</span></label>
+        <input type="text" id="f_hargaCustom" placeholder="mis. 25000000" inputmode="numeric" />
+        <div class="field-hint" id="f_hargaCustomHint" style="display:none"></div>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn-secondary" id="btnCancel">Batal</button>
@@ -822,7 +846,8 @@
       <h2>Tambah Pembayaran</h2>
       <button class="close-btn" id="btnPayClose">✕</button>
     </div>
-    <div class="field-label" id="payForName" style="font-size:14px;text-transform:none;color:var(--ink);font-weight:600;margin-bottom:14px"></div>
+    <div class="field-label" id="payForName" style="font-size:14px;text-transform:none;color:var(--ink);font-weight:600;margin-bottom:10px"></div>
+    <div id="payInfoStrip" style="background:var(--teal-light);border-radius:6px;padding:10px 14px;margin-bottom:14px;display:none"></div>
     <div class="grid-2">
       <div>
         <label class="field-label">Tanggal Bayar</label>
@@ -1394,6 +1419,9 @@ async function handleProfileSave() {
    ============================================================ */
 
 // Field jamaah di memori (camelCase) <-> kolom pilgrims di DB (snake_case)
+// hargaCustom: harga paket khusus per-jamaah (0 / null = ikut harga group)
+// Butuh kolom `harga_custom NUMERIC DEFAULT NULL` di tabel pilgrims Supabase:
+//   ALTER TABLE pilgrims ADD COLUMN IF NOT EXISTS harga_custom NUMERIC DEFAULT NULL;
 function pilgrimToDb(j) {
   return {
     nama_paspor: j.namaPaspor, no_paspor: j.noPaspor, jenis_kelamin: j.lp,
@@ -1401,6 +1429,7 @@ function pilgrimToDb(j) {
     issuing_office: j.issuingOffice || null, date_of_issue: j.dateOfIssue || null,
     date_of_expiry: j.dateOfExpiry || null, nama_ktp: j.namaKtp || null, nik: j.nik || null,
     status_vaksin: j.icv, status_visa: j.visaStatus, status_tiket: j.tiketStatus,
+    harga_custom: j.hargaCustom > 0 ? j.hargaCustom : null,
   };
 }
 function pilgrimFromDb(row) {
@@ -1410,7 +1439,16 @@ function pilgrimFromDb(row) {
     issuingOffice: row.issuing_office || '', dateOfIssue: row.date_of_issue || '',
     dateOfExpiry: row.date_of_expiry || '', namaKtp: row.nama_ktp || '', nik: row.nik || '',
     icv: row.status_vaksin, visaStatus: row.status_visa, tiketStatus: row.status_tiket,
+    hargaCustom: Number(row.harga_custom) || 0,
   };
+}
+
+// Helper: harga efektif per jamaah (custom jika ada, else harga group)
+function hargaEfektif(jamaahId) {
+  const g = groups[activeGroupId];
+  const j = jamaah.find(x => x.id === jamaahId);
+  const custom = j && j.hargaCustom > 0 ? j.hargaCustom : 0;
+  return custom > 0 ? custom : parseAngka(g.hargaPaket);
 }
 function paymentFromDb(row) {
   return {
@@ -2082,6 +2120,8 @@ function clearForm() {
   ['namaPaspor','noPaspor','tempatLahir','tanggalLahir','issuingOffice','dateOfIssue','dateOfExpiry','namaKtp','nik'].forEach(k => {
     document.getElementById('f_' + k).value = '';
   });
+  document.getElementById('f_hargaCustom').value = '';
+  document.getElementById('f_hargaCustomHint').style.display = 'none';
   document.getElementById('f_lp').value = 'L';
   document.getElementById('f_icv').value = 'Belum Vaksin';
   document.getElementById('f_visaStatus').value = 'Belum Diajukan';
@@ -2121,6 +2161,10 @@ function openEdit(id) {
   document.getElementById('f_icv').value = j.icv || 'Belum Vaksin';
   document.getElementById('f_visaStatus').value = j.visaStatus || 'Belum Diajukan';
   document.getElementById('f_tiketStatus').value = j.tiketStatus || 'Belum Terbit';
+  // Harga custom
+  const hcVal = j.hargaCustom > 0 ? j.hargaCustom : '';
+  document.getElementById('f_hargaCustom').value = hcVal;
+  updateHargaCustomHint();
   updateAgeHint();
   updatePaspHint();
   clearErrors();
@@ -2147,6 +2191,33 @@ function updatePaspHint() {
   hint.style.color = st.level === 'expired' || st.level === 'warning' ? 'var(--danger)' : '#8a8272';
   const icon = st.level === 'expired' ? '⛔ ' : st.level === 'warning' ? '⚠️ ' : '✓ ';
   hint.textContent = st.level === 'none' ? '' : icon + st.label;
+}
+
+function updateHargaCustomHint() {
+  const raw = document.getElementById('f_hargaCustom').value.trim();
+  const hint = document.getElementById('f_hargaCustomHint');
+  const g = groups[activeGroupId];
+  const hargaGroup = parseAngka(g ? g.hargaPaket : 0);
+  if (!raw) {
+    hint.style.display = hargaGroup > 0 ? 'block' : 'none';
+    hint.style.color = '#8a8272';
+    hint.textContent = hargaGroup > 0 ? `Mengikuti harga group: ${formatRupiah(hargaGroup)}` : '';
+    return;
+  }
+  const val = parseAngka(raw);
+  if (!val) { hint.style.display = 'none'; return; }
+  hint.style.display = 'block';
+  if (hargaGroup > 0 && val < hargaGroup) {
+    const selisih = hargaGroup - val;
+    hint.style.color = '#1a7038';
+    hint.textContent = `✓ Promo — diskon ${formatRupiah(selisih)} dari harga group (${formatRupiah(hargaGroup)})`;
+  } else if (hargaGroup > 0 && val > hargaGroup) {
+    hint.style.color = 'var(--danger)';
+    hint.textContent = `⚠ Lebih tinggi ${formatRupiah(val - hargaGroup)} dari harga group`;
+  } else {
+    hint.style.color = '#8a8272';
+    hint.textContent = `Sama dengan harga group (${formatRupiah(hargaGroup)})`;
+  }
 }
 
 async function handleSave() {
@@ -2193,6 +2264,7 @@ async function handleSave() {
     icv: document.getElementById('f_icv').value,
     visaStatus: document.getElementById('f_visaStatus').value,
     tiketStatus: document.getElementById('f_tiketStatus').value,
+    hargaCustom: parseAngka(document.getElementById('f_hargaCustom').value) || 0,
   };
 
   try {
@@ -2479,7 +2551,7 @@ function totalDibayar(jamaahId) {
 function statusPembayaran(jamaahId) {
   const g = groups[activeGroupId];
   const list = (g.payments && g.payments[jamaahId]) || [];
-  const harga = parseAngka(g.hargaPaket);
+  const harga = hargaEfektif(jamaahId);
   const dibayar = totalDibayar(jamaahId);
   const adaPelunasan = list.some(p => p.jenis === 'Pelunasan (Lunas)');
   if (adaPelunasan) return 'lunas';
@@ -2535,7 +2607,9 @@ function renderPaymentTable() {
 
   const rows = list.map(j => {
     const dibayar = totalDibayar(j.id);
-    const harga = parseAngka(g.hargaPaket);
+    const harga = hargaEfektif(j.id);
+    const hargaGroup = parseAngka(groups[activeGroupId].hargaPaket);
+    const isCustom = j.hargaCustom > 0 && j.hargaCustom !== hargaGroup;
     const sisa = Math.max(harga - dibayar, 0);
     const status = statusPembayaran(j.id);
     const badgeClass = status === 'lunas' ? 'badge-lunas' : status === 'dp' ? 'badge-dp' : 'badge-belum';
@@ -2543,9 +2617,20 @@ function renderPaymentTable() {
     const payments = (g.payments[j.id] || []);
     const expanded = expandedPaymentIds.has(j.id);
 
+    const hargaCell = harga > 0
+      ? `<div style="font-size:12px;color:#6b6152;margin-top:2px">
+           ${isCustom
+             ? `<span style="background:#fbf0da;color:#8a6d2c;font-weight:700;padding:1px 6px;border-radius:10px;font-size:10.5px">🏷 Promo</span>
+                ${formatRupiah(harga)}
+                <span style="color:#a39c8c;text-decoration:line-through;font-size:11px">${formatRupiah(hargaGroup)}</span>`
+             : formatRupiah(harga)
+           }
+         </div>`
+      : '';
+
     return `
       <tr>
-        <td class="name-cell">${escapeHtml(j.namaPaspor) || '—'}</td>
+        <td class="name-cell">${escapeHtml(j.namaPaspor) || '—'}${hargaCell}</td>
         <td>${formatRupiah(dibayar)}<div class="pay-history" style="cursor:pointer;text-decoration:underline" onclick="togglePaymentHistory('${j.id}')">${payments.length} transaksi ${expanded ? '▲ sembunyikan' : '▼ lihat riwayat'}</div></td>
         <td>${harga > 0 ? formatRupiah(sisa) : '—'}</td>
         <td><span class="badge ${badgeClass}">${badgeText}</span></td>
@@ -2590,9 +2675,45 @@ let payingForId = null;
 function openPayModal(jamaahId) {
   payingForId = jamaahId;
   const j = jamaah.find(x => x.id === jamaahId);
-  document.getElementById('payForName').textContent = j ? j.namaPaspor : '';
+  const g = groups[activeGroupId];
+  const harga = hargaEfektif(jamaahId);
+  const hargaGroup = parseAngka(g.hargaPaket);
+  const isCustom = j && j.hargaCustom > 0 && j.hargaCustom !== hargaGroup;
+  const dibayar = totalDibayar(jamaahId);
+  const sisa = harga > 0 ? Math.max(harga - dibayar, 0) : 0;
+
+  // Header: nama + ringkasan harga
+  let hargaInfo = '';
+  if (harga > 0) {
+    hargaInfo = isCustom
+      ? `<span style="background:#fbf0da;color:#8a6d2c;font-weight:700;padding:1px 7px;border-radius:10px;font-size:11px;margin-left:6px">🏷 Promo ${formatRupiah(harga)}</span>`
+      : `<span style="color:#6b6152;font-size:12px;margin-left:6px">${formatRupiah(harga)}</span>`;
+  }
+  document.getElementById('payForName').innerHTML =
+    `${escapeHtml(j ? j.namaPaspor : '')}${hargaInfo}`;
+
+  // Info strip: sudah dibayar / sisa
+  const strip = document.getElementById('payInfoStrip');
+  if (strip) {
+    if (harga > 0) {
+      const pct = Math.min(Math.round(dibayar / harga * 100), 100);
+      strip.style.display = 'block';
+      strip.innerHTML = `
+        <div style="display:flex;gap:18px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12.5px;flex-wrap:wrap;margin-bottom:4px">
+          <span>Harga paket: <b>${formatRupiah(harga)}</b>${isCustom ? ` <span style="text-decoration:line-through;color:#a39c8c">${formatRupiah(hargaGroup)}</span>` : ''}</span>
+          <span>Dibayar: <b style="color:#1a7038">${formatRupiah(dibayar)}</b></span>
+          <span>Sisa: <b style="color:${sisa === 0 ? '#1a7038' : 'var(--danger)'}">${formatRupiah(sisa)}</b></span>
+        </div>
+        <div style="background:#e4dfd3;border-radius:20px;height:7px;overflow:hidden">
+          <div style="width:${pct}%;height:100%;background:${pct>=100?'#2f8f52':'var(--teal)'};border-radius:20px;transition:width .3s"></div>
+        </div>`;
+    } else {
+      strip.style.display = 'none';
+    }
+  }
+
   document.getElementById('p_tanggal').value = new Date().toISOString().slice(0,10);
-  document.getElementById('p_jumlah').value = '';
+  document.getElementById('p_jumlah').value = sisa > 0 ? sisa : '';
   document.getElementById('p_jenis').value = 'DP (Uang Muka)';
   document.getElementById('p_metode').value = 'Tunai';
   document.getElementById('p_catatan').value = '';
@@ -2644,7 +2765,9 @@ function cetakKwitansi(jamaahId, paymentId) {
   if (!j || !p) return;
 
   const totalDibayarSemua = totalDibayar(jamaahId);
-  const harga = parseAngka(g.hargaPaket);
+  const harga = hargaEfektif(jamaahId);
+  const hargaGroup = parseAngka(g.hargaPaket);
+  const isCustomHarga = j.hargaCustom > 0 && j.hargaCustom !== hargaGroup;
   const sisa = Math.max(harga - totalDibayarSemua, 0);
   const lunas = harga > 0 && sisa <= 0;
   const logoImg = document.querySelector('.sidebar-logo img');
@@ -2681,7 +2804,7 @@ function cetakKwitansi(jamaahId, paymentId) {
       <div class="kw-payment-intro">Untuk Pembayaran (<i>Payment</i>) Umrah A.n</div>
       <ol class="kw-payment-list"><li>${escapeHtml(j.namaPaspor)}</li></ol>
 
-      <div class="kw-meta-row"><div class="kw-meta-label">Harga Paket</div><div class="kw-meta-colon">:</div><div class="kw-meta-val">${harga > 0 ? `${formatRupiah(harga)},- per Orang (${terbilangRupiah(harga)})` : '—'}</div></div>
+      <div class="kw-meta-row"><div class="kw-meta-label">Harga Paket</div><div class="kw-meta-colon">:</div><div class="kw-meta-val">${harga > 0 ? `${formatRupiah(harga)},- per Orang (${terbilangRupiah(harga)})${isCustomHarga ? ` <i style="font-size:11px">(Harga Khusus/Promo)</i>` : ''}` : '—'}</div></div>
 
       <div class="kw-keterangan-box">${keteranganHtml}</div>
 
@@ -2758,35 +2881,119 @@ function renderDashboard() {
 
   const gelArea = document.getElementById('gelombangArea');
   const ids = Object.keys(groups);
-  const gelRows = ids.map(id => {
+
+  // --- Grup berdasarkan bulan keberangkatan (satu gelombang = satu bulan) ---
+  const waveMap = {}; // key: 'YYYY-MM' atau '' (tanpa tanggal)
+  ids.forEach(id => {
     const gg = migrateGroup(groups[id]);
-    const jCount = gg.jamaah.length;
-    let l=0,d=0,b=0;
-    gg.jamaah.forEach(j => {
-      const list = (gg.payments[j.id] || []);
-      const harga = parseAngka(gg.hargaPaket);
-      const dibayar = list.reduce((s,p)=>s+parseAngka(p.jumlah),0);
-      const adaPelunasan = list.some(p => p.jenis === 'Pelunasan (Lunas)');
-      if (adaPelunasan || (harga>0 && dibayar>=harga)) l++; else if (dibayar>0) d++; else b++;
+    const key = gg.tglBerangkat ? gg.tglBerangkat.slice(0, 7) : '';
+    if (!waveMap[key]) waveMap[key] = [];
+    waveMap[key].push({ id, gg });
+  });
+
+  // Urutkan: bulan terdekat dulu, tanpa tanggal di akhir
+  const waveKeys = Object.keys(waveMap).filter(k => k !== '').sort();
+  if (waveMap['']) waveKeys.push('');
+
+  let gelRowsHtml = '';
+  let waveNum = 0;
+  waveKeys.forEach(key => {
+    waveNum++;
+    const entries = waveMap[key];
+    let waveLabel, waveDateRange;
+    if (key) {
+      const [y, m] = key.split('-');
+      const bulanNama = BULAN_ID[parseInt(m, 10) - 1];
+      waveLabel = `Gelombang ${waveNum} — ${bulanNama} ${y}`;
+      // Rentang tanggal keberangkatan dalam gelombang ini
+      const dates = entries.map(e => e.gg.tglBerangkat).filter(Boolean).sort();
+      if (dates.length === 1) {
+        waveDateRange = formatTanggal(dates[0]);
+      } else if (dates.length > 1) {
+        const first = formatTanggal(dates[0]);
+        const last  = formatTanggal(dates[dates.length - 1]);
+        waveDateRange = first === last ? first : first + ' – ' + last;
+      } else {
+        waveDateRange = '—';
+      }
+    } else {
+      waveLabel = `Gelombang — (Tanggal Belum Diisi)`;
+      waveDateRange = '—';
+    }
+
+    // Hitung total jamaah & status bayar untuk seluruh group dalam gelombang ini
+    let totalJ = 0, totalL = 0, totalD = 0, totalB = 0;
+    const activeInWave = entries.some(e => e.id === activeGroupId);
+    entries.forEach(({ gg }) => {
+      gg.jamaah.forEach(j => {
+        totalJ++;
+        const list = (gg.payments[j.id] || []);
+        const harga = parseAngka(gg.hargaPaket);
+        const dibayar = list.reduce((s,p)=>s+parseAngka(p.jumlah),0);
+        const adaPelunasan = list.some(p => p.jenis === 'Pelunasan (Lunas)');
+        if (adaPelunasan || (harga>0 && dibayar>=harga)) totalL++;
+        else if (dibayar>0) totalD++;
+        else totalB++;
+      });
     });
-    return `
-      <tr class="${id === activeGroupId ? 'active-gel' : ''}" onclick="setActiveGroupFromDashboard('${id}')">
-        <td style="font-weight:600">${escapeHtml(gg.label)}</td>
-        <td>${gg.tglBerangkat ? formatTanggal(gg.tglBerangkat) : '—'}</td>
-        <td>${jCount}${gg.kuotaJamaah ? ' / ' + gg.kuotaJamaah : ''}</td>
-        <td>${gg.hargaPaket ? formatRupiah(gg.hargaPaket) : '—'}</td>
-        <td>
-          <span class="mini-badge mini-lunas">${l} Lunas</span>
-          <span class="mini-badge mini-dp">${d} DP</span>
-          <span class="mini-badge mini-belum">${b} Belum</span>
+
+    // Baris header gelombang
+    gelRowsHtml += `
+      <tr style="background:var(--teal-light)">
+        <td colspan="5" style="font-weight:700;font-size:13px;color:var(--teal);padding:10px 12px">
+          ${escapeHtml(waveLabel)}
         </td>
       </tr>
     `;
-  }).join('');
+
+    // Baris tiap group dalam gelombang ini
+    entries.forEach(({ id, gg }) => {
+      const jCount = gg.jamaah.length;
+      let l=0,d=0,b=0;
+      gg.jamaah.forEach(j => {
+        const list = (gg.payments[j.id] || []);
+        const harga = parseAngka(gg.hargaPaket);
+        const dibayar = list.reduce((s,p)=>s+parseAngka(p.jumlah),0);
+        const adaPelunasan = list.some(p => p.jenis === 'Pelunasan (Lunas)');
+        if (adaPelunasan || (harga>0 && dibayar>=harga)) l++; else if (dibayar>0) d++; else b++;
+      });
+      gelRowsHtml += `
+        <tr class="${id === activeGroupId ? 'active-gel' : ''}" onclick="setActiveGroupFromDashboard('${id}')" style="cursor:pointer">
+          <td style="font-weight:600;padding-left:24px">↳ ${escapeHtml(gg.label)}</td>
+          <td>${gg.tglBerangkat ? formatTanggal(gg.tglBerangkat) : '—'}</td>
+          <td>${jCount}${gg.kuotaJamaah ? ' / ' + gg.kuotaJamaah : ''}</td>
+          <td>${gg.hargaPaket ? formatRupiah(gg.hargaPaket) : '—'}</td>
+          <td>
+            <span class="mini-badge mini-lunas">${l} Lunas</span>
+            <span class="mini-badge mini-dp">${d} DP</span>
+            <span class="mini-badge mini-belum">${b} Belum</span>
+          </td>
+        </tr>
+      `;
+    });
+
+    // Baris ringkasan gelombang jika lebih dari 1 group
+    if (entries.length > 1) {
+      gelRowsHtml += `
+        <tr style="background:#f7f4ed;font-style:italic;color:#6b6152;font-size:12px">
+          <td style="padding-left:24px;color:#4b5c58;font-weight:600">Total Gelombang ini</td>
+          <td>${waveDateRange}</td>
+          <td>${totalJ}</td>
+          <td>—</td>
+          <td>
+            <span class="mini-badge mini-lunas">${totalL} Lunas</span>
+            <span class="mini-badge mini-dp">${totalD} DP</span>
+            <span class="mini-badge mini-belum">${totalB} Belum</span>
+          </td>
+        </tr>
+      `;
+    }
+  });
+
   gelArea.innerHTML = `
     <table class="gel-table">
-      <thead><tr><th>Gelombang</th><th>Keberangkatan</th><th>Jamaah</th><th>Harga Paket</th><th>Status Bayar</th></tr></thead>
-      <tbody>${gelRows}</tbody>
+      <thead><tr><th>Group / Gelombang</th><th>Keberangkatan</th><th>Jamaah</th><th>Harga Paket</th><th>Status Bayar</th></tr></thead>
+      <tbody>${gelRowsHtml}</tbody>
     </table>
   `;
 
@@ -2797,79 +3004,195 @@ const BULAN_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agus
 
 function renderGlobalSummary() {
   const allGroupIds = Object.keys(groups);
-  let totalJamaahSemua = 0;
-  const monthMap = {}; // key: 'YYYY-MM' -> { count: n, gelombang: Set }
-  let tanpaTanggal = 0;
+
+  // ── 1. Kumpulkan data per bulan keberangkatan ────────────────────────────
+  // waveData: { key: 'YYYY-MM'|'', groups: [{id,label,tgl,jCount,lunas,dp,belum,kuota,harga}] }
+  const waveOrder = []; // urut YYYY-MM lalu '' di akhir
+  const waveData  = {};
 
   allGroupIds.forEach(id => {
     const gg = migrateGroup(groups[id]);
-    const jCount = gg.jamaah.length;
-    totalJamaahSemua += jCount;
+    const key = gg.tglBerangkat ? gg.tglBerangkat.slice(0, 7) : '';
+    if (!waveData[key]) { waveData[key] = { groups: [] }; waveOrder.push(key); }
 
-    if (gg.tglBerangkat) {
-      const key = gg.tglBerangkat.slice(0, 7); // YYYY-MM
-      if (!monthMap[key]) monthMap[key] = { count: 0, gelombang: new Set() };
-      monthMap[key].count += jCount;
-      monthMap[key].gelombang.add(gg.label);
-    } else if (jCount > 0) {
-      tanpaTanggal += jCount;
-    }
+    let lunas = 0, dp = 0, belum = 0;
+    gg.jamaah.forEach(j => {
+      const list  = gg.payments[j.id] || [];
+      const harga = parseAngka(gg.hargaPaket);
+      const paid  = list.reduce((s, p) => s + parseAngka(p.jumlah), 0);
+      const full  = list.some(p => p.jenis === 'Pelunasan (Lunas)');
+      if (full || (harga > 0 && paid >= harga)) lunas++;
+      else if (paid > 0) dp++;
+      else belum++;
+    });
+
+    waveData[key].groups.push({
+      id, label: gg.label,
+      tgl: gg.tglBerangkat || '',
+      jCount: gg.jamaah.length,
+      lunas, dp, belum,
+      kuota: parseAngka(gg.kuotaJamaah),
+      harga: parseAngka(gg.hargaPaket),
+    });
   });
 
-  const totalGelombang = allGroupIds.length;
+  // Urutkan: bulan ascending, tanpa tanggal di akhir
+  waveOrder.sort((a, b) => {
+    if (a === '' && b === '') return 0;
+    if (a === '') return 1;
+    if (b === '') return -1;
+    return a.localeCompare(b);
+  });
 
+  // ── 2. Hitung grand total ────────────────────────────────────────────────
+  let gtJamaah = 0, gtLunas = 0, gtDp = 0, gtBelum = 0;
+  const totalGelombang = waveOrder.filter(k => k !== '').length + (waveData[''] ? 1 : 0);
+  const totalGroup     = allGroupIds.length;
+
+  waveOrder.forEach(key => {
+    waveData[key].groups.forEach(g => {
+      gtJamaah += g.jCount;
+      gtLunas  += g.lunas;
+      gtDp     += g.dp;
+      gtBelum  += g.belum;
+    });
+  });
+
+  const pctLunas = gtJamaah > 0 ? Math.round(gtLunas / gtJamaah * 100) : 0;
+  const pctDp    = gtJamaah > 0 ? Math.round(gtDp    / gtJamaah * 100) : 0;
+  const pctBelum = gtJamaah > 0 ? Math.round(gtBelum / gtJamaah * 100) : 0;
+
+  // ── 3. Stat cards (atas) ─────────────────────────────────────────────────
   document.getElementById('globalStatGrid').innerHTML = `
-    <div class="stat-tile">
-      <div class="stat-caption">Total Jamaah Terinput</div>
-      <div class="stat-value">${totalJamaahSemua}</div>
-      <div class="stat-sub">dari seluruh gelombang</div>
-    </div>
-    <div class="stat-tile">
-      <div class="stat-caption">Total Gelombang</div>
-      <div class="stat-value">${totalGelombang}</div>
-      <div class="stat-sub">gelombang keberangkatan tercatat</div>
+    <div class="gs-stat-strip">
+      <div class="gs-stat-card">
+        <div class="gs-sc-cap">Total Jamaah</div>
+        <div class="gs-sc-val">${gtJamaah}</div>
+        <div class="gs-sc-sub">dari seluruh gelombang</div>
+      </div>
+      <div class="gs-stat-card">
+        <div class="gs-sc-cap">Total Gelombang</div>
+        <div class="gs-sc-val">${totalGelombang}</div>
+        <div class="gs-sc-sub">${totalGroup} group terdaftar</div>
+      </div>
+      <div class="gs-stat-card" style="border-color:#b8dcc4">
+        <div class="gs-sc-cap">Lunas</div>
+        <div class="gs-sc-val" style="color:#1a7038">${gtLunas}</div>
+        <div class="gs-sc-sub">${pctLunas}% dari total jamaah</div>
+      </div>
+      <div class="gs-stat-card" style="border-color:#e0d0a8">
+        <div class="gs-sc-cap">Baru DP</div>
+        <div class="gs-sc-val" style="color:#8a6d2c">${gtDp}</div>
+        <div class="gs-sc-sub">${pctDp}% dari total jamaah</div>
+      </div>
+      <div class="gs-stat-card" style="border-color:#e0b8b4">
+        <div class="gs-sc-cap">Belum Bayar</div>
+        <div class="gs-sc-val" style="color:var(--danger)">${gtBelum}</div>
+        <div class="gs-sc-sub">${pctBelum}% dari total jamaah</div>
+      </div>
     </div>
   `;
 
-  const monthKeys = Object.keys(monthMap).sort();
-  const maxCount = Math.max(...monthKeys.map(k => monthMap[k].count), 1);
+  // ── 4. Tabel per-gelombang ───────────────────────────────────────────────
   const wrap = document.getElementById('monthlyBreakdown');
-
-  if (!monthKeys.length && tanpaTanggal === 0) {
-    wrap.innerHTML = `<div class="empty-text" style="padding:6px 0">Belum ada data jamaah di gelombang mana pun.</div>`;
+  if (!waveOrder.length) {
+    wrap.innerHTML = `<div class="empty-text" style="padding:10px 0">Belum ada data jamaah di gelombang mana pun.</div>`;
     return;
   }
 
-  let html = monthKeys.map(key => {
-    const [y, m] = key.split('-');
-    const label = BULAN_ID[parseInt(m, 10) - 1] + ' ' + y;
-    const info = monthMap[key];
-    const gelList = Array.from(info.gelombang).join(', ');
-    return `
-      <div class="month-block">
-        <div class="month-row">
-          <div class="month-label">${label}</div>
-          <div class="month-track"><div class="month-fill" style="width:${(info.count / maxCount * 100)}%"></div></div>
-          <div class="month-count">${info.count} jamaah</div>
-        </div>
-        <div class="month-gel-count">${info.gelombang.size} gelombang: ${escapeHtml(gelList)}</div>
-      </div>
-    `;
-  }).join('');
+  const maxJamaah = Math.max(...waveOrder.map(k =>
+    waveData[k].groups.reduce((s, g) => s + g.jCount, 0)
+  ), 1);
 
-  if (tanpaTanggal > 0) {
-    html += `
-      <div class="month-block">
-        <div class="month-row">
-          <div class="month-label" style="color:#8a8272">Belum Ada Tanggal</div>
-          <div class="month-track"><div class="month-fill" style="width:${(tanpaTanggal / maxCount * 100)}%;background:#a39c8c"></div></div>
-          <div class="month-count">${tanpaTanggal} jamaah</div>
-        </div>
-      </div>
-    `;
-  }
+  let waveNum = 0;
+  let tbodyRows = '';
 
-  wrap.innerHTML = html;
+  waveOrder.forEach(key => {
+    waveNum++;
+    const entry   = waveData[key];
+    const isNoDate = key === '';
+
+    // Hitung total per gelombang
+    let wJamaah = 0, wLunas = 0, wDp = 0, wBelum = 0;
+    entry.groups.forEach(g => { wJamaah += g.jCount; wLunas += g.lunas; wDp += g.dp; wBelum += g.belum; });
+
+    // Label gelombang
+    let waveName, wavePeriod;
+    if (!isNoDate) {
+      const [y, mo] = key.split('-');
+      waveName   = `Gelombang ${waveNum}`;
+      wavePeriod = BULAN_ID[parseInt(mo, 10) - 1] + ' ' + y;
+    } else {
+      waveName   = `Gelombang — Tanggal Belum Diisi`;
+      wavePeriod = '—';
+    }
+
+    // Nama group sebagai sub-teks
+    const groupNames = entry.groups.map(g => escapeHtml(g.label)).join(', ');
+    const barPct     = Math.round(wJamaah / maxJamaah * 100);
+
+    // Persen lunas dalam gelombang ini
+    const wPctLunas = wJamaah > 0 ? Math.round(wLunas / wJamaah * 100) : 0;
+
+    tbodyRows += `
+      <tr class="gs-wave-row">
+        <td>
+          <div class="gs-wave-name">${escapeHtml(waveName)}</div>
+          <div class="gs-group-list">📅 ${wavePeriod} &nbsp;·&nbsp; ${entry.groups.length} group: ${groupNames}</div>
+        </td>
+        <td class="num gs-bar-cell">
+          <div style="font-weight:700;font-size:14px">${wJamaah}</div>
+          <div class="gs-bar-wrap"><div class="gs-bar-fill" style="width:${barPct}%"></div></div>
+        </td>
+        <td class="num" style="color:#1a7038;font-weight:700">${wLunas}<br><span style="font-size:10px;color:#6aaa84;font-weight:400">${wPctLunas}%</span></td>
+        <td class="num" style="color:#8a6d2c;font-weight:700">${wDp}</td>
+        <td class="num" style="color:var(--danger);font-weight:700">${wBelum}</td>
+        <td>
+          <div class="gs-pay-pills">
+            <span class="gs-pill gs-pill-lunas">${wLunas} Lunas</span>
+            <span class="gs-pill gs-pill-dp">${wDp} DP</span>
+            <span class="gs-pill gs-pill-belum">${wBelum} Belum</span>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  // Baris total
+  tbodyRows += `
+    <tr class="gs-total-row">
+      <td style="font-weight:700">Total Semua Gelombang</td>
+      <td class="num" style="font-weight:700;font-size:15px">${gtJamaah}</td>
+      <td class="num" style="color:#1a7038;font-weight:700">${gtLunas}<br><span style="font-size:10px;color:#6aaa84;font-weight:400">${pctLunas}%</span></td>
+      <td class="num" style="color:#8a6d2c;font-weight:700">${gtDp}</td>
+      <td class="num" style="color:var(--danger);font-weight:700">${gtBelum}</td>
+      <td>
+        <div class="gs-pay-pills">
+          <span class="gs-pill gs-pill-lunas">${gtLunas} Lunas</span>
+          <span class="gs-pill gs-pill-dp">${gtDp} DP</span>
+          <span class="gs-pill gs-pill-belum">${gtBelum} Belum</span>
+        </div>
+      </td>
+    </tr>
+  `;
+
+  wrap.innerHTML = `
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <table class="gs-table">
+        <thead>
+          <tr>
+            <th style="min-width:220px">Gelombang</th>
+            <th class="num" style="min-width:100px">Jamaah</th>
+            <th class="num">Lunas</th>
+            <th class="num">DP</th>
+            <th class="num">Belum</th>
+            <th style="min-width:180px">Status Bayar</th>
+          </tr>
+        </thead>
+        <tbody>${tbodyRows}</tbody>
+      </table>
+    </div>
+  `;
 }
 
 document.getElementById('navDashboard').addEventListener('click', () => switchNav('dashboard'));
@@ -2905,6 +3228,7 @@ document.getElementById('importOverlay').addEventListener('click', function(e) {
 document.getElementById('searchInput').addEventListener('input', renderTable);
 document.getElementById('f_tanggalLahir').addEventListener('change', updateAgeHint);
 document.getElementById('f_dateOfExpiry').addEventListener('change', updatePaspHint);
+document.getElementById('f_hargaCustom').addEventListener('input', updateHargaCustomHint);
 document.getElementById('namaRombongan').addEventListener('input', () => { saveData(); applyActiveGroupToForm(); });
 document.getElementById('tglBerangkat').addEventListener('change', () => { saveData(); renderDashboard(); });
 document.getElementById('tglPulang').addEventListener('change', saveData);

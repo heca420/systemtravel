@@ -448,6 +448,29 @@
   .gd-msg { font-size: 13px; color: #4b5c58; margin-bottom: 14px; line-height: 1.5; }
   .gd-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
 
+  /* ---- Family / Kolektif Payment Modal ---- */
+  .fam-modal { background: #fff; border-radius: 8px; width: 100%; max-width: 660px; max-height: 90vh; overflow-y: auto; padding: 26px 28px; font-family: 'Helvetica Neue', Arial, sans-serif; animation: modalIn .22s cubic-bezier(.22,.61,.36,1); }
+  .fam-section-label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6b6152; margin: 0 0 8px; }
+  .fam-member-list { border: 1.5px solid var(--line); border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
+  .fam-member-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background .13s; }
+  .fam-member-item:last-child { border-bottom: none; }
+  .fam-member-item:hover { background: #f4f1ea; }
+  .fam-member-item.selected { background: var(--teal-light); }
+  .fam-member-item input[type=checkbox] { width: 16px; height: 16px; flex-shrink: 0; accent-color: var(--teal); cursor: pointer; }
+  .fam-member-info { flex: 1; min-width: 0; }
+  .fam-member-name { font-weight: 600; font-size: 13.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fam-member-sub  { font-size: 11.5px; color: #8a8272; margin-top: 2px; }
+  .fam-member-harga { font-size: 12px; font-weight: 700; color: var(--teal); white-space: nowrap; flex-shrink: 0; }
+  .fam-total-strip { background: var(--teal-light); border: 1px solid #c8ddd9; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+  .fam-total-strip b { font-size: 15px; color: var(--teal); }
+  .fam-err { color: var(--danger); font-size: 12px; margin-top: 4px; }
+  /* Kwitansi kolektif — tabel rincian per anggota */
+  .kw-family-table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 13px; }
+  .kw-family-table th { text-align: left; padding: 5px 8px; border-bottom: 1px solid #111; font-weight: 700; font-size: 12px; }
+  .kw-family-table td { padding: 5px 8px; border-bottom: 1px solid #ccc; }
+  .kw-family-table td.num { text-align: right; }
+  .kw-family-table tr.kw-ft-total td { border-top: 2px solid #111; border-bottom: none; font-weight: 700; }
+
   .app-footer {
     background: #0d0d0d;
     color: #b9bfc4;
@@ -733,7 +756,8 @@
         <div class="save-status" id="saveStatusPay" style="align-self:flex-end;padding-bottom:9px">Tersimpan otomatis</div>
       </div>
       <div class="toolbar">
-        <div class="search-box" style="margin-left:0">
+        <button class="btn-secondary" id="btnFamilyPay" style="gap:7px">👨‍👩‍👧 Bayar Keluarga / Kolektif</button>
+        <div class="search-box">
           <span class="search-icon">🔍</span>
           <input placeholder="Cari nama jamaah…" id="searchPayInput" />
         </div>
@@ -885,6 +909,78 @@
     <div class="modal-actions">
       <button class="btn-secondary" id="btnPayCancel">Batal</button>
       <button class="btn-primary" id="btnPaySave">✓ Simpan Pembayaran</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="familyPayOverlay">
+  <div class="fam-modal">
+    <div class="modal-head">
+      <h2>💳 Pembayaran Keluarga / Kolektif</h2>
+      <button class="close-btn" id="btnFamPayClose">✕</button>
+    </div>
+
+    <!-- Pilih anggota keluarga -->
+    <p class="fam-section-label">Pilih anggota yang ikut dalam pembayaran ini</p>
+    <div class="fam-member-list" id="famMemberList">
+      <!-- diisi oleh openFamilyPayModal() -->
+    </div>
+
+    <!-- Strip total -->
+    <div class="fam-total-strip" id="famTotalStrip">
+      <span>Dipilih: <b id="famSelectedCount">0</b> orang</span>
+      <span>Total Harga Paket: <b id="famTotalHarga">—</b></span>
+      <span>Total Dibayar s/d ini: <b id="famTotalSudahBayar">—</b></span>
+      <span>Total Sisa: <b id="famTotalSisa">—</b></span>
+    </div>
+
+    <!-- Form pembayaran -->
+    <div class="grid-2">
+      <div>
+        <label class="field-label">Tanggal Bayar</label>
+        <input type="date" id="fp_tanggal" />
+      </div>
+      <div>
+        <label class="field-label">Jenis Pembayaran</label>
+        <select id="fp_jenis">
+          <option value="DP (Uang Muka)">DP (Uang Muka)</option>
+          <option value="Pelunasan (Lunas)">Pelunasan (Lunas)</option>
+          <option value="Pembayaran Lain">Pembayaran Lain</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Metode</label>
+        <select id="fp_metode">
+          <option>Tunai</option>
+          <option>Transfer Bank</option>
+          <option>QRIS</option>
+          <option>Lainnya</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Total Dibayar Sekarang (Rp)</label>
+        <input type="text" id="fp_jumlahTotal" placeholder="mis. 10000000" inputmode="numeric" />
+        <div class="field-hint" id="fp_jumlahHint" style="display:none"></div>
+      </div>
+      <div class="span-2">
+        <label class="field-label" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="fp_splitMerata" style="width:auto;margin:0" checked />
+          Bagi rata ke setiap anggota yang dipilih
+        </label>
+        <div class="field-hint" id="fp_splitHint" style="margin-top:4px"></div>
+      </div>
+      <div class="span-2">
+        <label class="field-label">Keterangan (opsional)</label>
+        <input id="fp_catatan" placeholder="mis. DP keluarga Bapak Ahmad" />
+      </div>
+      <div class="span-2" id="fp_err_wrap" style="display:none">
+        <div class="fam-err" id="fp_err_msg"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" id="btnFamPayCancel">Batal</button>
+      <button class="btn-primary" id="btnFamPaySave">✓ Simpan &amp; Cetak Kwitansi Kolektif</button>
     </div>
   </div>
 </div>
@@ -2590,6 +2686,7 @@ function renderPaymentTable() {
         <td>
           <div class="row-actions">
             <button class="edit-link" onclick="cetakKwitansi('${j.id}','${p.id}')">Cetak</button>
+            <button class="edit-link" style="color:var(--brass-dark)" onclick="openFamilyPayModal('${j.id}','${p.id}')">Kolektif</button>
             <button class="del-link" onclick="handleDeletePayment('${j.id}','${p.id}')">Hapus</button>
           </div>
         </td>
@@ -2722,6 +2819,206 @@ function openPayModal(jamaahId) {
 }
 function closePayModal() { document.getElementById('payOverlay').classList.remove('open'); payingForId = null; }
 
+/* =====================================================================
+   PEMBAYARAN KELUARGA / KOLEKTIF
+   ===================================================================== */
+
+// State: jamaahId yang dijadikan "anchor" saat dibuka dari tombol Kolektif
+// di riwayat bayar, atau null saat dibuka dari toolbar "+ Bayar Keluarga".
+let famAnchorJamaahId = null; // pre-select jamaah ini saat modal dibuka
+let famAnchorPaymentId = null; // payment yang sudah ada (untuk cetak ulang kolektif)
+
+// ── Hitung & update strip total di modal ────────────────────────────────────
+function updateFamTotalStrip() {
+  const g = groups[activeGroupId];
+  const checked = [...document.querySelectorAll('.fam-chk:checked')];
+  const ids = checked.map(el => el.dataset.id);
+
+  let totalHarga = 0, totalDibayarSdIni = 0, totalSisa = 0;
+  ids.forEach(id => {
+    const h = hargaEfektif(id);
+    const d = totalDibayar(id);
+    totalHarga        += h;
+    totalDibayarSdIni += d;
+    totalSisa         += h > 0 ? Math.max(h - d, 0) : 0;
+  });
+
+  document.getElementById('famSelectedCount').textContent  = ids.length;
+  document.getElementById('famTotalHarga').textContent      = ids.length ? formatRupiah(totalHarga)        : '—';
+  document.getElementById('famTotalSudahBayar').textContent = ids.length ? formatRupiah(totalDibayarSdIni) : '—';
+  document.getElementById('famTotalSisa').textContent       = ids.length ? formatRupiah(totalSisa)         : '—';
+
+  // Auto-isi jumlah bayar sekarang dengan total sisa jika split merata aktif
+  updateFamSplitHint();
+}
+
+function updateFamSplitHint() {
+  const checked = [...document.querySelectorAll('.fam-chk:checked')];
+  const ids  = checked.map(el => el.dataset.id);
+  const hint = document.getElementById('fp_splitHint');
+  const isSplit = document.getElementById('fp_splitMerata').checked;
+  const jumlahTotal = parseAngka(document.getElementById('fp_jumlahTotal').value);
+
+  if (!ids.length) { hint.textContent = ''; return; }
+
+  if (isSplit && jumlahTotal > 0) {
+    const perOrang = Math.floor(jumlahTotal / ids.length);
+    const sisa     = jumlahTotal - perOrang * ids.length;
+    hint.textContent = `Tiap orang: ${formatRupiah(perOrang)}${sisa > 0 ? ` (sisa ${formatRupiah(sisa)} dicatat ke orang pertama)` : ''}`;
+  } else if (isSplit) {
+    // Pre-fill dengan total sisa masing-masing
+    let totalSisa = 0;
+    ids.forEach(id => {
+      const h = hargaEfektif(id);
+      const d = totalDibayar(id);
+      totalSisa += h > 0 ? Math.max(h - d, 0) : 0;
+    });
+    hint.textContent = totalSisa > 0 ? `Total sisa semua anggota: ${formatRupiah(totalSisa)}` : '';
+  } else {
+    hint.textContent = `Jumlah di atas dicatat penuh untuk setiap anggota (tidak dibagi rata).`;
+  }
+}
+
+// ── Buka modal ────────────────────────────────────────────────────────────────
+// anchorJamaahId : jamaah yang di-pre-check (opsional)
+// anchorPaymentId: jika bukan null → mode "cetak ulang kolektif" saja (tidak
+//                  input baru), tapi untuk MVP kita tetap buka mode input baru
+//                  dengan anggota sudah di-check
+function openFamilyPayModal(anchorJamaahId, anchorPaymentId) {
+  famAnchorJamaahId  = anchorJamaahId  || null;
+  famAnchorPaymentId = anchorPaymentId || null;
+
+  const g = groups[activeGroupId];
+
+  // Bangun daftar anggota
+  const listEl = document.getElementById('famMemberList');
+  listEl.innerHTML = jamaah.map(j => {
+    const harga   = hargaEfektif(j.id);
+    const dibayar = totalDibayar(j.id);
+    const sisa    = harga > 0 ? Math.max(harga - dibayar, 0) : 0;
+    const status  = statusPembayaran(j.id);
+    const isAnchor = j.id === famAnchorJamaahId;
+    const badgeCls = status === 'lunas' ? 'badge-lunas' : status === 'dp' ? 'badge-dp' : 'badge-belum';
+    const badgeTxt = status === 'lunas' ? 'Lunas' : status === 'dp' ? 'DP' : 'Belum Bayar';
+
+    // Harga custom indicator
+    const hargaGroup = parseAngka(g.hargaPaket);
+    const isCustom   = j.hargaCustom > 0 && j.hargaCustom !== hargaGroup;
+    const hargaLabel = harga > 0
+      ? (isCustom ? `🏷 ${formatRupiah(harga)}` : formatRupiah(harga))
+      : '—';
+
+    return `
+      <label class="fam-member-item${isAnchor ? ' selected' : ''}" id="fam-item-${j.id}">
+        <input type="checkbox" class="fam-chk" data-id="${j.id}"
+               ${isAnchor ? 'checked' : ''}
+               onchange="
+                 document.getElementById('fam-item-${j.id}').classList.toggle('selected', this.checked);
+                 updateFamTotalStrip();
+               " />
+        <div class="fam-member-info">
+          <div class="fam-member-name">${escapeHtml(j.namaPaspor)}</div>
+          <div class="fam-member-sub">
+            <span class="badge ${badgeCls}" style="font-size:10px">${badgeTxt}</span>
+            &nbsp;Dibayar: ${formatRupiah(dibayar)}
+            ${harga > 0 ? ` &nbsp;·&nbsp; Sisa: <b>${formatRupiah(sisa)}</b>` : ''}
+          </div>
+        </div>
+        <div class="fam-member-harga">${hargaLabel}</div>
+      </label>`;
+  }).join('');
+
+  // Reset form
+  document.getElementById('fp_tanggal').value    = new Date().toISOString().slice(0, 10);
+  document.getElementById('fp_jenis').value      = 'DP (Uang Muka)';
+  document.getElementById('fp_metode').value     = 'Tunai';
+  document.getElementById('fp_jumlahTotal').value = '';
+  document.getElementById('fp_catatan').value    = '';
+  document.getElementById('fp_splitMerata').checked = true;
+  document.getElementById('fp_err_wrap').style.display = 'none';
+  document.getElementById('fp_splitHint').textContent  = '';
+
+  updateFamTotalStrip();
+  document.getElementById('familyPayOverlay').classList.add('open');
+}
+
+function closeFamilyPayModal() {
+  document.getElementById('familyPayOverlay').classList.remove('open');
+  famAnchorJamaahId  = null;
+  famAnchorPaymentId = null;
+}
+
+// ── Simpan pembayaran kolektif ────────────────────────────────────────────────
+async function handleFamilyPaySave() {
+  const errWrap = document.getElementById('fp_err_wrap');
+  const errMsg  = document.getElementById('fp_err_msg');
+  errWrap.style.display = 'none';
+
+  const checked = [...document.querySelectorAll('.fam-chk:checked')];
+  const selectedIds = checked.map(el => el.dataset.id);
+
+  if (selectedIds.length < 1) {
+    errMsg.textContent = 'Pilih minimal 1 anggota.';
+    errWrap.style.display = 'block'; return;
+  }
+
+  const jumlahTotal = parseAngka(document.getElementById('fp_jumlahTotal').value);
+  if (!jumlahTotal) {
+    errMsg.textContent = 'Jumlah pembayaran harus diisi.';
+    errWrap.style.display = 'block'; return;
+  }
+
+  const isSplit  = document.getElementById('fp_splitMerata').checked;
+  const tanggal  = document.getElementById('fp_tanggal').value;
+  const jenis    = document.getElementById('fp_jenis').value;
+  const metode   = document.getElementById('fp_metode').value;
+  const catatan  = document.getElementById('fp_catatan').value.trim();
+  const g        = groups[activeGroupId];
+  const btn      = document.getElementById('btnFamPaySave');
+
+  // Hitung jumlah per orang
+  let jumlahPerOrang;
+  if (isSplit) {
+    const base = Math.floor(jumlahTotal / selectedIds.length);
+    jumlahPerOrang = selectedIds.map((_, i) =>
+      i === 0 ? jumlahTotal - base * (selectedIds.length - 1) : base
+    );
+  } else {
+    jumlahPerOrang = selectedIds.map(() => jumlahTotal);
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan…';
+
+  const savedRecords = []; // [{jamaahId, record}]
+  try {
+    for (let i = 0; i < selectedIds.length; i++) {
+      const jId   = selectedIds[i];
+      const draft = { tanggal, jumlah: jumlahPerOrang[i], jenis, metode, catatan };
+      if (!g.payments[jId]) g.payments[jId] = [];
+      const record = await sbInsertPayment(activeGroupId, jId, draft);
+      g.payments[jId].push(record);
+      savedRecords.push({ jamaahId: jId, record });
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '✓ Simpan & Cetak Kwitansi Kolektif';
+    errMsg.textContent = 'Gagal menyimpan ke server: ' + e.message;
+    errWrap.style.display = 'block';
+    return;
+  }
+
+  renderPaymentTable();
+  renderDashboard();
+  closeFamilyPayModal();
+
+  btn.disabled = false;
+  btn.textContent = '✓ Simpan & Cetak Kwitansi Kolektif';
+
+  // Cetak kwitansi kolektif
+  cetakKwitansiKolektif(savedRecords, { tanggal, jenis, metode, catatan, jumlahTotal, isSplit });
+}
+
 async function handlePaySave() {
   const jumlah = parseAngka(document.getElementById('p_jumlah').value);
   if (!jumlah) { document.getElementById('err_jumlah_wrap').style.display = 'block'; return; }
@@ -2823,6 +3120,193 @@ function cetakKwitansi(jamaahId, paymentId) {
   window.print();
 }
 
+/* =====================================================================
+   KWITANSI KOLEKTIF — cetak satu kwitansi untuk beberapa anggota sekaligus
+   savedRecords : [{jamaahId, record}]  — hasil dari handleFamilyPaySave
+   meta         : {tanggal, jenis, metode, catatan, jumlahTotal, isSplit}
+   ===================================================================== */
+function cetakKwitansiKolektif(savedRecords, meta) {
+  if (!savedRecords || !savedRecords.length) return;
+  const g         = groups[activeGroupId];
+  const logoImg   = document.querySelector('.sidebar-logo img');
+  const logoSrc   = logoImg ? logoImg.src : '';
+  const groupIndex = Object.keys(groups).indexOf(activeGroupId) + 1;
+
+  // Gunakan noKwitansi dari record pertama sebagai nomor utama
+  const firstRecord = savedRecords[0].record;
+  const nomorUtama  = formatNomorKwitansi(firstRecord, g, groupIndex > 0 ? groupIndex : 1);
+
+  // ── Hitung baris per anggota ─────────────────────────────────────────────
+  let grandJumlahBayarSekarang = 0;
+  let grandTotalDibayarSdIni   = 0;
+  let grandTotalHarga          = 0;
+  let grandSisaSetelah         = 0;
+  let allLunas                 = true;
+
+  const memberRows = savedRecords.map(({ jamaahId, record }, idx) => {
+    const j            = jamaah.find(x => x.id === jamaahId);
+    const namaLabel    = j ? j.namaPaspor.toUpperCase() : '(tidak ditemukan)';
+    const harga        = hargaEfektif(jamaahId);
+    const hargaGroup   = parseAngka(g.hargaPaket);
+    const isCustomHarga = j && j.hargaCustom > 0 && j.hargaCustom !== hargaGroup;
+    const dibayarSdIni = totalDibayar(jamaahId);          // sudah termasuk payment baru
+    const sisaSetelah  = harga > 0 ? Math.max(harga - dibayarSdIni, 0) : 0;
+    const adaPelunasan = (g.payments[jamaahId] || []).some(p => p.jenis === 'Pelunasan (Lunas)');
+    const isLunas      = adaPelunasan || (harga > 0 && sisaSetelah <= 0);
+
+    grandJumlahBayarSekarang += record.jumlah;
+    grandTotalDibayarSdIni   += dibayarSdIni;
+    grandTotalHarga          += harga;
+    grandSisaSetelah         += sisaSetelah;
+    if (!isLunas) allLunas    = false;
+
+    return {
+      idx: idx + 1,
+      namaLabel,
+      harga,
+      isCustomHarga,
+      jumlahBayar: record.jumlah,
+      dibayarSdIni,
+      sisaSetelah,
+      isLunas,
+    };
+  });
+
+  // ── Tabel rincian per anggota ────────────────────────────────────────────
+  const tabelAnggota = `
+    <table class="kw-family-table">
+      <thead>
+        <tr>
+          <th style="width:24px">No</th>
+          <th>Nama Jamaah</th>
+          <th class="num">Harga Paket</th>
+          <th class="num">Dibayar Kali Ini</th>
+          <th class="num">Total Dibayar</th>
+          <th class="num">Sisa</th>
+          <th style="width:60px;text-align:center">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${memberRows.map(r => `
+          <tr>
+            <td>${r.idx}</td>
+            <td style="font-weight:700">${escapeHtml(r.namaLabel)}${r.isCustomHarga ? ' <i style="font-size:10px;font-weight:400">(Harga Khusus)</i>' : ''}</td>
+            <td class="num">${r.harga > 0 ? formatRupiah(r.harga) : '—'}</td>
+            <td class="num" style="font-weight:700">${formatRupiah(r.jumlahBayar)}</td>
+            <td class="num">${formatRupiah(r.dibayarSdIni)}</td>
+            <td class="num">${r.harga > 0 ? formatRupiah(r.sisaSetelah) : '—'}</td>
+            <td style="text-align:center;font-size:11px;font-weight:700;color:${r.isLunas ? '#1a7038' : '#a3402f'}">
+              ${r.isLunas ? 'LUNAS' : 'Belum Lunas'}
+            </td>
+          </tr>`).join('')}
+        <tr class="kw-ft-total">
+          <td colspan="2">Total (${memberRows.length} Jamaah)</td>
+          <td class="num">${grandTotalHarga > 0 ? formatRupiah(grandTotalHarga) : '—'}</td>
+          <td class="num">${formatRupiah(grandJumlahBayarSekarang)}</td>
+          <td class="num">${formatRupiah(grandTotalDibayarSdIni)}</td>
+          <td class="num">${grandTotalHarga > 0 ? formatRupiah(grandSisaSetelah) : '—'}</td>
+          <td style="text-align:center;font-size:11px;font-weight:700;color:${allLunas ? '#1a7038' : '#a3402f'}">
+            ${allLunas ? 'LUNAS' : '—'}
+          </td>
+        </tr>
+      </tbody>
+    </table>`;
+
+  // ── Keterangan utama ─────────────────────────────────────────────────────
+  const keteranganJenis  = meta.catatan ? `${meta.jenis} — ${meta.catatan}` : meta.jenis;
+  const keteranganHtml   = allLunas
+    ? `Telah diterima pembayaran kolektif sebesar <b>${formatRupiah(grandJumlahBayarSekarang)}</b>
+       (${terbilangRupiah(grandJumlahBayarSekarang)}) untuk <b>${memberRows.length} jamaah</b>
+       (${memberRows.map(r => r.namaLabel).join(', ')}).
+       <i>Seluruh anggota telah</i> <b>melunasi pembayaran penuh</b>
+       <i>dan tidak ada sisa kewajiban pembayaran.</i> <span class="lunas">LUNAS</span>`
+    : `Telah diterima pembayaran kolektif sebesar <b>${formatRupiah(grandJumlahBayarSekarang)}</b>
+       (${terbilangRupiah(grandJumlahBayarSekarang)}) untuk <b>${memberRows.length} jamaah</b>.
+       ${grandTotalHarga > 0
+         ? `Total sisa kewajiban seluruh anggota: <b>${formatRupiah(grandSisaSetelah)}</b>
+            (${terbilangRupiah(grandSisaSetelah)}).`
+         : ''}`;
+
+  // ── Nomor kwitansi tambahan (jika lebih dari 1 record) ───────────────────
+  const nomorTambahan = savedRecords.length > 1
+    ? savedRecords.slice(1).map(({ record: r }, i) =>
+        formatNomorKwitansi(r, g, groupIndex > 0 ? groupIndex : 1)
+      ).join(', ')
+    : '';
+
+  const html = `
+    <div class="kw-box">
+      <div class="kw-letterhead">
+        ${logoSrc ? `<img src="${logoSrc}" alt="Logo" />` : ''}
+        <div class="kw-company-lines">
+          <div class="kw-company-tagline">${escapeHtml(KWITANSI_TAGLINE)}</div>
+          <div class="kw-company-address">${escapeHtml(KWITANSI_ALAMAT_1)}<br>${escapeHtml(KWITANSI_ALAMAT_2)}</div>
+        </div>
+      </div>
+      <div class="kw-title2">Tanda Terima / Kwitansi Kolektif</div>
+
+      <div class="kw-meta-row">
+        <div class="kw-meta-label">Nomor</div>
+        <div class="kw-meta-colon">:</div>
+        <div class="kw-meta-val">
+          ${escapeHtml(nomorUtama)}
+          ${nomorTambahan ? `<div style="font-size:11px;color:#555;margin-top:2px">Ref. tambahan: ${escapeHtml(nomorTambahan)}</div>` : ''}
+        </div>
+      </div>
+      <div class="kw-meta-row">
+        <div class="kw-meta-label">Terima dari</div>
+        <div class="kw-meta-colon">:</div>
+        <div class="kw-meta-val"><b>${escapeHtml(memberRows[0].namaLabel)}</b>
+          <span style="font-weight:400;font-size:12px"> &amp; Keluarga / ${memberRows.length} Orang</span></div>
+      </div>
+      <div class="kw-meta-row">
+        <div class="kw-meta-label">Jumlah</div>
+        <div class="kw-meta-colon">:</div>
+        <div class="kw-meta-val"><b>${formatRupiah(grandJumlahBayarSekarang)}.-</b>
+          (${terbilangRupiah(grandJumlahBayarSekarang)})</div>
+      </div>
+      <div class="kw-meta-row">
+        <div class="kw-meta-label">Metode</div>
+        <div class="kw-meta-colon">:</div>
+        <div class="kw-meta-val">${escapeHtml(meta.metode)}</div>
+      </div>
+
+      <div class="kw-payment-intro">Untuk Pembayaran (<i>Payment</i>) Umrah A.n</div>
+      <ol class="kw-payment-list">
+        ${memberRows.map(r => `<li>${escapeHtml(r.namaLabel)}</li>`).join('')}
+      </ol>
+
+      <div style="font-size:12.5px;font-family:'Helvetica Neue',Arial,sans-serif;margin-bottom:8px">
+        Rincian pembayaran per anggota:
+      </div>
+      ${tabelAnggota}
+
+      <div class="kw-meta-row">
+        <div class="kw-meta-label">Jenis</div>
+        <div class="kw-meta-colon">:</div>
+        <div class="kw-meta-val">${escapeHtml(keteranganJenis)}</div>
+      </div>
+      <div class="kw-meta-row">
+        <div class="kw-meta-label">Keberangkatan</div>
+        <div class="kw-meta-colon">:</div>
+        <div class="kw-meta-val">${g.tglBerangkat ? formatTanggalPanjang(g.tglBerangkat) : '—'}</div>
+      </div>
+
+      <div class="kw-keterangan-box">${keteranganHtml}</div>
+
+      <div class="kw-signoff">
+        <div class="kw-signoff-block">
+          <div class="kw-place-date">${escapeHtml(KWITANSI_KOTA_TERBIT)}, ${formatTanggalPanjang(meta.tanggal)}</div>
+          <div class="kw-signer-name">${escapeHtml(KWITANSI_PENANDATANGAN_NAMA)}</div>
+          <div class="kw-signer-role">${escapeHtml(KWITANSI_PENANDATANGAN_JABATAN)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('kwitansiPrintArea').innerHTML = html;
+  window.print();
+}
 
 function renderDashboard() {
   const g = groups[activeGroupId];
@@ -3229,6 +3713,16 @@ document.getElementById('searchInput').addEventListener('input', renderTable);
 document.getElementById('f_tanggalLahir').addEventListener('change', updateAgeHint);
 document.getElementById('f_dateOfExpiry').addEventListener('change', updatePaspHint);
 document.getElementById('f_hargaCustom').addEventListener('input', updateHargaCustomHint);
+
+// ── Family / Kolektif modal listeners ──────────────────────────────────────
+document.getElementById('btnFamilyPay').addEventListener('click', () => openFamilyPayModal(null, null));
+document.getElementById('btnFamPayClose').addEventListener('click', closeFamilyPayModal);
+document.getElementById('btnFamPayCancel').addEventListener('click', closeFamilyPayModal);
+document.getElementById('btnFamPaySave').addEventListener('click', handleFamilyPaySave);
+document.getElementById('familyPayOverlay').addEventListener('click', function(e) { if (e.target === this) closeFamilyPayModal(); });
+// Jumlah input → update split hint live
+document.getElementById('fp_jumlahTotal').addEventListener('input', updateFamSplitHint);
+document.getElementById('fp_splitMerata').addEventListener('change', updateFamSplitHint);
 document.getElementById('namaRombongan').addEventListener('input', () => { saveData(); applyActiveGroupToForm(); });
 document.getElementById('tglBerangkat').addEventListener('change', () => { saveData(); renderDashboard(); });
 document.getElementById('tglPulang').addEventListener('change', saveData);

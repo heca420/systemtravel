@@ -1626,10 +1626,13 @@ async function sbDeletePayment(id) {
 
 // Debounce ringan untuk update field per-karakter (nama rombongan, dsb.)
 // supaya tidak menembak Supabase di setiap ketikan.
-let _groupFieldSaveTimer = null;
+// PENTING: timer disimpan PER-gelombang (bukan satu timer global) — kalau
+// staf mengedit gelombang A lalu langsung pindah & mengedit gelombang B
+// dalam waktu <500ms, simpanan gelombang A tidak boleh ikut terhapus.
+let _groupFieldSaveTimers = {};
 function debouncedUpdateGroupFields(groupId, fields) {
-  clearTimeout(_groupFieldSaveTimer);
-  _groupFieldSaveTimer = setTimeout(() => {
+  clearTimeout(_groupFieldSaveTimers[groupId]);
+  _groupFieldSaveTimers[groupId] = setTimeout(() => {
     sbUpdateGroup(groupId, fields).catch(e => console.error('Gagal menyimpan ke Supabase', e));
   }, 500);
 }
@@ -1818,7 +1821,14 @@ function updateLastBackupNote() {
   const raw = localStorage.getItem(BACKUP_TIME_KEY);
   if (!raw) { note.textContent = 'Belum pernah backup.'; syncMobileLastBackupNote(); return; }
   const d = new Date(raw);
-  note.textContent = 'Backup terakhir: ' + formatTanggal(raw.slice(0,10)) + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  // Catatan: pakai getDate/getMonth/getFullYear dari objek Date yang sama
+  // dengan getHours/getMinutes (waktu lokal browser), bukan potongan
+  // string UTC — supaya tanggal & jam yang ditampilkan selalu konsisten
+  // satu sama lain (sebelumnya bisa beda hari kalau backup dilakukan
+  // sore/malam WIB, karena tanggal diambil dari string UTC sementara
+  // jam dari waktu lokal).
+  const tglLokal = String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + d.getFullYear();
+  note.textContent = 'Backup terakhir: ' + tglLokal + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
   syncMobileLastBackupNote();
 }
 
@@ -1858,10 +1868,28 @@ function switchNav(nav) {
   if (nav === 'dashboard') renderDashboard();
 }
 
+// Parser tanggal "aman zona-waktu" untuk string tanggal murni (YYYY-MM-DD).
+// `new Date('YYYY-MM-DD')` dibaca sebagai tengah malam UTC oleh browser,
+// lalu getDate()/getMonth() membacanya kembali dalam zona waktu LOKAL
+// perangkat — untuk zona waktu di belakang UTC ini bisa membuat tanggal
+// mundur satu hari. Fungsi ini membangun Date dari komponen Y/M/D secara
+// langsung di zona waktu lokal sehingga tanggal yang ditampilkan selalu
+// sama persis dengan yang tersimpan, di zona waktu manapun perangkat berada.
+function parseIsoDateLocal(iso) {
+  if (!iso) return null;
+  const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) {
+    const d = new Date(iso);
+    return isNaN(d) ? null : d;
+  }
+  const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return isNaN(d) ? null : d;
+}
+
 function hitungUsia(tanggalLahir) {
   if (!tanggalLahir) return '';
-  const lahir = new Date(tanggalLahir);
-  if (isNaN(lahir)) return '';
+  const lahir = parseIsoDateLocal(tanggalLahir);
+  if (!lahir) return '';
   const now = new Date();
   let usia = now.getFullYear() - lahir.getFullYear();
   const m = now.getMonth() - lahir.getMonth();
@@ -1871,8 +1899,8 @@ function hitungUsia(tanggalLahir) {
 
 function formatTanggal(iso) {
   if (!iso) return '—';
-  const d = new Date(iso);
-  if (isNaN(d)) return iso;
+  const d = parseIsoDateLocal(iso);
+  if (!d) return iso;
   const dd = String(d.getDate()).padStart(2, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const yyyy = d.getFullYear();
@@ -1882,10 +1910,10 @@ function formatTanggal(iso) {
 /* Status masa berlaku paspor terhadap tanggal keberangkatan (standar umum: minimal 6 bulan). */
 function statusPaspor(dateOfExpiry, tglBerangkatGroup) {
   if (!dateOfExpiry) return { level: 'none', label: 'Tgl expiry belum diisi' };
-  const expiry = new Date(dateOfExpiry);
-  if (isNaN(expiry)) return { level: 'none', label: 'Tgl expiry tidak valid' };
+  const expiry = parseIsoDateLocal(dateOfExpiry);
+  if (!expiry) return { level: 'none', label: 'Tgl expiry tidak valid' };
 
-  const acuan = tglBerangkatGroup ? new Date(tglBerangkatGroup) : new Date();
+  const acuan = tglBerangkatGroup ? parseIsoDateLocal(tglBerangkatGroup) : new Date();
   const batasAman = new Date(acuan);
   batasAman.setMonth(batasAman.getMonth() + 6);
 
@@ -1949,14 +1977,14 @@ function terbilangRupiah(n) {
 const NAMA_BULAN_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 function formatTanggalPanjang(iso) {
   if (!iso) return '—';
-  const d = new Date(iso);
-  if (isNaN(d)) return iso;
+  const d = parseIsoDateLocal(iso);
+  if (!d) return iso;
   return `${d.getDate()} ${NAMA_BULAN_ID[d.getMonth()]} ${d.getFullYear()}`;
 }
 function formatTanggalSingkat2(iso) {
   if (!iso) return '—';
-  const d = new Date(iso);
-  if (isNaN(d)) return iso;
+  const d = parseIsoDateLocal(iso);
+  if (!d) return iso;
   const dd = String(d.getDate()).padStart(2, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const yy = String(d.getFullYear()).slice(-2);

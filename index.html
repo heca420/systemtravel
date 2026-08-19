@@ -11,53 +11,76 @@
 <style>
   :root {
     --ink: #1c2b2e;
-    --paper: #f2ddae;
-    --brass: #a9863a;
-    --brass-dark: #8a6d2c;
-    --teal: #0f4c46;
-    --teal-light: #e8efed;
-    --line: #d9d2c0;
-    --danger: #a3402f;
-    --gold: #c9a13b;
+    --paper: #eef2f5;
+    --brass: #c9a13b;
+    --brass-dark: #a9863a;
+    --teal: #0f6e63;
+    --teal-2: #14a394;
+    --teal-light: #e6f4f1;
+    --line: rgba(28,43,46,.10);
+    --danger: #d6503d;
+    --gold: #d9ae42;
+
+    --glass-bg: rgba(255,255,255,.55);
+    --glass-bg-strong: rgba(255,255,255,.72);
+    --glass-border: rgba(255,255,255,.55);
+    --glass-shadow: 0 8px 32px rgba(15,60,55,.14), 0 1px 0 rgba(255,255,255,.6) inset;
+    --shine: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0) 45%);
+    --radius: 16px;
+    --radius-sm: 10px;
   }
   * { box-sizing: border-box; }
   html, body { height: 100%; }
   body {
     margin: 0;
     font-family: Georgia, 'Iowan Old Style', serif;
-    background: var(--paper);
     color: var(--ink);
+    background:
+      radial-gradient(1100px 700px at -8% -12%, rgba(20,163,148,.30), transparent 60%),
+      radial-gradient(900px 700px at 108% 0%, rgba(201,161,59,.24), transparent 55%),
+      radial-gradient(1200px 900px at 50% 115%, rgba(15,110,99,.18), transparent 60%),
+      linear-gradient(160deg, #f4f8f7 0%, #eef2f5 45%, #f3efe4 100%);
+    background-attachment: fixed;
   }
   .sans { font-family: 'Helvetica Neue', Arial, sans-serif; }
 
-  /* ---- App shell / sidebar ---- */
+  /* ---- App shell / sidebar (glass + aero) ---- */
   .app-shell { display: flex; min-height: 100vh; }
   .sidebar {
-    width: 240px; flex-shrink: 0; background: var(--teal); color: #fff;
+    width: 240px; flex-shrink: 0; color: #fff;
     padding: 22px 16px; display: flex; flex-direction: column; gap: 22px;
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,0) 30%),
+      linear-gradient(165deg, #0f6e63 0%, #0c5850 55%, #0a453f 100%);
+    box-shadow: 4px 0 28px rgba(8,40,36,.22);
+    border-right: 1px solid rgba(255,255,255,.14);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
   }
   .sidebar-logo { text-align: center; }
-  .sidebar-logo img { max-width: 140px; width: 100%; height: auto; background: #fff; border-radius: 6px; padding: 6px; }
+  .sidebar-logo img { max-width: 140px; width: 100%; height: auto; background: #fff; border-radius: 10px; padding: 6px; box-shadow: 0 4px 14px rgba(0,0,0,.18); }
   .sidebar-brand { font-family: Georgia, serif; font-size: 14px; text-align: center; margin-top: 8px; opacity: .92; line-height: 1.3; }
   .nav-list { display: flex; flex-direction: column; gap: 4px; }
   .nav-item {
     font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13.5px; font-weight: 600;
-    color: rgba(255,255,255,.78); background: none; border: none; text-align: left;
-    padding: 10px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 9px;
-    transition: background .18s ease, color .18s ease, transform .15s ease;
+    color: rgba(255,255,255,.82); background: none; border: none; text-align: left;
+    padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 9px;
+    transition: background .18s ease, color .18s ease, transform .15s ease, box-shadow .18s ease;
   }
-  .nav-item:hover { background: rgba(255,255,255,.10); color: #fff; transform: translateX(2px); }
+  .nav-item:hover { background: rgba(255,255,255,.14); color: #fff; transform: translateX(2px); }
   .nav-item:active { transform: translateX(1px) scale(.98); }
-  .nav-item.active { background: #fff; color: var(--teal); transform: none; }
+  .nav-item.active { background: linear-gradient(180deg, #fff, #f3f7f6); color: var(--teal); transform: none; box-shadow: 0 4px 14px rgba(0,0,0,.16), 0 1px 0 rgba(255,255,255,.8) inset; }
   .sidebar-section { border-top: 1px solid rgba(255,255,255,.18); padding-top: 16px; }
   .sidebar-label {
     font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; letter-spacing: .1em;
-    text-transform: uppercase; color: rgba(255,255,255,.55); margin-bottom: 8px;
+    text-transform: uppercase; color: rgba(255,255,255,.6); margin-bottom: 8px;
   }
   .sidebar select {
     width: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px;
-    padding: 8px 9px; border-radius: 4px; border: 1px solid rgba(255,255,255,.25);
-    background: rgba(255,255,255,.08); color: #fff; margin-bottom: 8px;
+    padding: 8px 9px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.10); color: #fff; margin-bottom: 8px;
+    backdrop-filter: blur(2px);
   }
   .sidebar select option { color: #1c2b2e; }
   .sidebar-btn-row { display: flex; flex-direction: column; gap: 6px; }
@@ -65,10 +88,10 @@
   .profile-section { border-top: none; padding-top: 0; }
   .profile-card { display: flex; align-items: center; gap: 10px; }
   .profile-avatar {
-    width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.15);
+    width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,.18);
     display: flex; align-items: center; justify-content: center;
     font-family: 'Helvetica Neue', Arial, sans-serif; font-weight: 700; font-size: 15px;
-    flex-shrink: 0; color: #fff;
+    flex-shrink: 0; color: #fff; border: 1px solid rgba(255,255,255,.3);
   }
   .profile-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
   .profile-info { min-width: 0; flex: 1; }
@@ -77,7 +100,7 @@
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .profile-role {
-    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; color: rgba(255,255,255,.55);
+    font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; color: rgba(255,255,255,.6);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
@@ -96,17 +119,29 @@
 
   .import-row { display: flex; justify-content: space-between; gap: 10px; padding: 7px 12px; border-bottom: 1px solid var(--line); }
   .import-row:last-child { border-bottom: none; }
-  .import-row.dup { background: #f9ece9; color: var(--danger); }
+  .import-row.dup { background: #fbeae7; color: var(--danger); }
   .import-row .ir-name { font-weight: 600; }
   .import-row .ir-tag { font-size: 11px; }
 
-  .lock-screen { position: fixed; inset: 0; background: var(--paper); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
-  .lock-box { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 36px 32px; max-width: 340px; width: 100%; text-align: center; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .lock-screen {
+    position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;
+    background:
+      radial-gradient(1100px 700px at -8% -12%, rgba(20,163,148,.32), transparent 60%),
+      radial-gradient(900px 700px at 108% 0%, rgba(201,161,59,.26), transparent 55%),
+      linear-gradient(160deg, #eef4f2 0%, #eef2f5 45%, #f3efe4 100%);
+  }
+  .lock-box {
+    background: var(--glass-bg-strong);
+    border: 1px solid var(--glass-border); border-radius: var(--radius);
+    padding: 36px 32px; max-width: 340px; width: 100%; text-align: center; font-family: 'Helvetica Neue', Arial, sans-serif;
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  }
   .lock-logo { max-width: 120px; width: 100%; height: auto; margin-bottom: 14px; }
   .lock-title { font-family: Georgia, serif; color: var(--teal); margin: 0 0 4px; font-size: 19px; }
   .lock-sub { font-size: 12.5px; color: #8a8272; margin: 0 0 18px; }
-  .lock-pin-input { width: 100%; text-align: center; font-size: 24px; letter-spacing: 10px; padding: 12px; border: 1.5px solid var(--line); border-radius: 7px; transition: border-color .18s ease, box-shadow .18s ease; }
-  .lock-pin-input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(15,76,70,.12); }
+  .lock-pin-input { width: 100%; text-align: center; font-size: 24px; letter-spacing: 10px; padding: 12px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); transition: border-color .18s ease, box-shadow .18s ease; background: rgba(255,255,255,.7); }
+  .lock-pin-input:focus { outline: none; border-color: var(--teal); box-shadow: 0 0 0 3px rgba(15,110,99,.15); }
   .lock-error { color: var(--danger); font-size: 12px; margin-top: 10px; }
   .lock-reset-link { margin-top: 18px; background: none; border: none; color: #8a8272; font-size: 11.5px; text-decoration: underline; cursor: pointer; display: block; width: 100%; }
   .login-footer { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 10.5px; color: #a39c8c; line-height: 1.5; }
@@ -118,18 +153,18 @@
     transition: opacity .15s ease, transform .15s ease, filter .15s ease;
   }
   .eicv-select:hover { opacity: .85; transform: scale(1.04); }
-  .eicv-select.eicv-ok { background: #e2f2e6; color: #1f7a3d; }
-  .eicv-select.eicv-no { background: #eee; color: #7a7466; }
+  .eicv-select.eicv-ok { background: #dcf3e3; color: #1f7a3d; }
+  .eicv-select.eicv-no { background: rgba(0,0,0,.06); color: #7a7466; }
   .sb-btn {
     font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; font-weight: 600;
-    padding: 7px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,.3);
-    background: transparent; color: #fff; cursor: pointer; text-align: left;
+    padding: 7px 10px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,.3);
+    background: rgba(255,255,255,.06); color: #fff; cursor: pointer; text-align: left;
     transition: background .18s ease, border-color .18s ease, transform .15s ease;
   }
-  .sb-btn:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.5); }
+  .sb-btn:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.5); }
   .sb-btn:active { transform: scale(.97); }
   .sb-btn.danger { border-color: rgba(255,120,100,.5); color: #ffb4a3; }
-  .sb-btn.danger:hover { background: rgba(255,120,100,.12); border-color: rgba(255,120,100,.7); }
+  .sb-btn.danger:hover { background: rgba(255,120,100,.14); border-color: rgba(255,120,100,.7); }
 
   .main-content { flex: 1; padding: 28px 30px 60px; min-width: 0; transition: padding .25s ease; }
 
@@ -143,11 +178,12 @@
   }
   .sidebar-toggle-btn {
     position: fixed; top: 20px; left: 252px; z-index: 70;
-    width: 32px; height: 32px; border-radius: 50%;
-    border: 1px solid var(--line); background: #fff; color: var(--teal);
+    width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid var(--glass-border); background: var(--glass-bg-strong); color: var(--teal);
     font-size: 14px; line-height: 1; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,.18);
+    box-shadow: 0 4px 14px rgba(0,0,0,.16);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     transition: left .25s ease, transform .2s ease;
     font-family: 'Helvetica Neue', Arial, sans-serif;
   }
@@ -159,25 +195,26 @@
   .hamburger-btn {
     display: none;
     position: fixed; top: 12px; left: 12px; z-index: 200;
-    width: 44px; height: 44px; border-radius: 8px;
-    border: none; background: var(--teal); color: #fff;
+    width: 44px; height: 44px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.25);
+    background: linear-gradient(165deg, #12816f, #0a453f); color: #fff;
     font-size: 22px; line-height: 1; cursor: pointer;
     align-items: center; justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,.28);
+    box-shadow: 0 6px 18px rgba(0,0,0,.3);
     transition: background .18s ease, transform .15s ease;
     font-family: 'Helvetica Neue', Arial, sans-serif;
   }
-  .hamburger-btn:hover { background: #0b3a35; transform: scale(1.06); }
+  .hamburger-btn:hover { transform: scale(1.06); }
   .hamburger-btn:active { transform: scale(.96); }
 
   /* ---- Mobile Top Bar ---- */
   .mobile-topbar {
     display: none;
-    background: var(--teal); color: #fff;
+    background: linear-gradient(165deg, #0f6e63, #0a453f); color: #fff;
     padding: 0 16px 0 68px; height: 56px;
     align-items: center;
     position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    box-shadow: 0 4px 16px rgba(0,0,0,.2);
   }
   .mobile-topbar-title {
     font-family: Georgia, serif; font-size: 16px; font-weight: 600;
@@ -188,8 +225,8 @@
   .mobile-sidebar-overlay {
     display: none;
     position: fixed; inset: 0; z-index: 150;
-    background: rgba(28,43,46,.55);
-    backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+    background: rgba(10,30,28,.55);
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
     animation: overlayIn .2s ease;
   }
   .mobile-sidebar-overlay.open { display: block; }
@@ -198,12 +235,12 @@
   .mobile-sidebar-drawer {
     position: fixed; top: 0; left: 0; bottom: 0; z-index: 160;
     width: 270px; max-width: 85vw;
-    background: var(--teal); color: #fff;
+    background: linear-gradient(165deg, #0f6e63 0%, #0a453f 100%); color: #fff;
     padding: 0 16px 20px; overflow-y: auto;
     display: flex; flex-direction: column; gap: 18px;
     transform: translateX(-100%);
     transition: transform .25s cubic-bezier(.22,.61,.36,1);
-    box-shadow: 4px 0 24px rgba(0,0,0,.28);
+    box-shadow: 4px 0 28px rgba(0,0,0,.32);
   }
   .mobile-sidebar-drawer.open { transform: translateX(0); }
 
@@ -214,20 +251,19 @@
     flex-shrink: 0;
   }
   .mobile-drawer-logo { display: flex; align-items: center; gap: 10px; }
-  .mobile-drawer-logo img { max-width: 72px; height: auto; background: #fff; border-radius: 5px; padding: 4px; }
+  .mobile-drawer-logo img { max-width: 72px; height: auto; background: #fff; border-radius: 8px; padding: 4px; }
   .mobile-drawer-logo-text { font-family: Georgia, serif; font-size: 13px; opacity: .92; line-height: 1.3; color: #fff; }
   .mobile-drawer-close {
     background: none; border: none; color: rgba(255,255,255,.7);
     font-size: 22px; cursor: pointer; line-height: 1; padding: 4px 6px;
-    border-radius: 4px; flex-shrink: 0;
+    border-radius: var(--radius-sm); flex-shrink: 0;
     transition: background .15s ease, color .15s ease;
   }
-  .mobile-drawer-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+  .mobile-drawer-close:hover { background: rgba(255,255,255,.14); color: #fff; }
 
   /* ---- Horizontal scroll for wide tables ---- */
-  #gelombangArea, .pay-history-box { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .pay-history-box { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   #tableArea table, #paymentArea table { min-width: 920px; }
-  #gelombangArea table.gel-table { min-width: 680px; }
   .pay-history-box table.gel-table { min-width: 620px; }
 
   @media (max-width: 860px) {
@@ -244,17 +280,18 @@
 
   input, select {
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    border: 1.5px solid var(--line); background: #fff;
-    padding: 9px 12px; border-radius: 7px; font-size: 14px;
+    border: 1.5px solid var(--line); background: rgba(255,255,255,.75);
+    padding: 9px 12px; border-radius: var(--radius-sm); font-size: 14px;
     width: 100%; color: var(--ink);
-    transition: border-color .18s ease, box-shadow .18s ease;
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
   }
   input::placeholder { color: #b5ada0; }
-  input:hover:not(:focus), select:hover:not(:focus) { border-color: #b8b0a0; }
+  input:hover:not(:focus), select:hover:not(:focus) { border-color: #b8d8d3; background: #fff; }
   input:focus, select:focus {
     outline: none;
     border-color: var(--teal);
-    box-shadow: 0 0 0 3px rgba(15,76,70,.12);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(15,110,99,.14);
   }
   label.field-label {
     font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -265,97 +302,174 @@
   .page-title { font-family: Georgia, serif; font-size: 24px; color: var(--teal); margin: 0 0 4px; }
   .page-sub { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; color: #8a8272; margin-bottom: 22px; }
 
+  /* ---- Status strip: countdown + kesiapan berangkat ---- */
+  .dash-status-strip { display: flex; gap: 14px; flex-wrap: wrap; margin: 16px 0 22px; }
+  .dash-status-card {
+    flex: 1; min-width: 240px; color: #fff; border-radius: var(--radius); padding: 16px 20px;
+    display: flex; align-items: center; gap: 16px;
+    background: linear-gradient(150deg, #14a394, #0a453f);
+    box-shadow: 0 10px 28px rgba(10,60,54,.28), 0 1px 0 rgba(255,255,255,.25) inset;
+    position: relative; overflow: hidden;
+  }
+  .dash-status-card::before { content: ''; position: absolute; inset: 0; background: var(--shine); pointer-events: none; }
+  .dash-status-card.warn { background: linear-gradient(150deg, #e2705d, #a3402f); box-shadow: 0 10px 28px rgba(163,64,47,.3), 0 1px 0 rgba(255,255,255,.25) inset; }
+  .dash-status-card.neutral { background: linear-gradient(150deg, #8a8272, #55503f); box-shadow: 0 10px 28px rgba(60,55,45,.25), 0 1px 0 rgba(255,255,255,.2) inset; }
+  .dash-status-num { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 30px; font-weight: 700; line-height: 1; white-space: nowrap; position: relative; }
+  .dash-status-txt { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; line-height: 1.4; opacity: .95; position: relative; }
+  .dash-status-txt b { font-size: 13px; display: block; margin-bottom: 2px; }
+  .dash-readiness-card { flex: 1; min-width: 240px; background: var(--glass-bg-strong); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 14px 18px; box-shadow: var(--glass-shadow); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .dash-readiness-top { display: flex; justify-content: space-between; align-items: baseline; font-family: 'Helvetica Neue', Arial, sans-serif; margin-bottom: 8px; }
+  .dash-readiness-top b { font-size: 20px; color: var(--teal); }
+  .dash-readiness-top span { font-size: 11px; color: #6b6152; text-transform: uppercase; letter-spacing: .04em; }
+  .dash-readiness-track { background: rgba(15,43,46,.08); border-radius: 20px; height: 10px; overflow: hidden; }
+  .dash-readiness-fill { height: 100%; background: linear-gradient(90deg,#2f8f52,var(--teal-2)); border-radius: 20px; transition: width .3s; }
+
+  /* ---- Donut chart pelunasan (CSS conic-gradient, tanpa library) ---- */
+  .donut-wrap { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+  .donut { width: 138px; height: 138px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(15,60,55,.16); }
+  .donut-center { width: 88px; height: 88px; border-radius: 50%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Helvetica Neue', Arial, sans-serif; box-shadow: 0 1px 0 rgba(255,255,255,.8) inset; }
+  .donut-center b { font-size: 22px; color: var(--teal); line-height: 1; }
+  .donut-center span { font-size: 10px; color: #8a8272; text-transform: uppercase; letter-spacing: .03em; margin-top: 2px; }
+  .donut-legend { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
+  .donut-legend-row { display: flex; align-items: center; gap: 8px; }
+  .donut-dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
+  .donut-legend-row b { margin-left: auto; padding-left: 18px; }
+
+  /* ---- Perlu Perhatian ---- */
+  .attn-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
+  .attn-row:last-child { border-bottom: none; }
+  .attn-name { font-weight: 600; color: var(--ink); }
+  .attn-reason { color: var(--danger); font-size: 12px; }
+  .attn-link { color: var(--teal); font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: underline; white-space: nowrap; }
+
+  /* ---- Aktivitas terbaru ---- */
+  .activity-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12.5px; }
+  .activity-row:last-child { border-bottom: none; }
+  .activity-icon { width: 26px; height: 26px; border-radius: 50%; background: var(--teal-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 13px; }
+  .activity-txt b { color: var(--ink); }
+  .activity-time { color: #a39c8c; font-size: 11px; margin-top: 1px; }
+
+  /* ---- Badge notifikasi di menu Dashboard ---- */
+  .nav-badge { display: inline-block; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--danger); color: #fff; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; margin-left: 6px; }
+
+  @media print {
+    body.print-dashboard * { visibility: hidden; }
+    body.print-dashboard #panelDashboard, body.print-dashboard #panelDashboard * { visibility: visible; }
+    body.print-dashboard #panelDashboard { position: absolute; top: 0; left: 0; width: 100%; padding: 10px; }
+    body.print-dashboard #btnExportDashboardPdf,
+    body.print-dashboard input,
+    body.print-dashboard .gs-bar-cell .gs-bar-wrap { display: none !important; }
+    @page { margin: 12mm 14mm; }
+  }
+
   .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 26px; }
-  .stat-tile { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; }
+  .stat-tile {
+    background: var(--glass-bg-strong); border: 1px solid var(--glass-border); border-radius: var(--radius);
+    padding: 16px 18px; box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .stat-tile:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(15,60,55,.18), 0 1px 0 rgba(255,255,255,.6) inset; }
   .stat-tile .stat-value { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 24px; font-weight: 700; color: var(--teal); line-height: 1.1; }
   .stat-tile .stat-sub { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11.5px; color: #8a8272; margin-top: 4px; }
   .stat-tile .stat-caption { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: #6b6152; margin-bottom: 6px; }
 
-  .section-block { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; margin-bottom: 20px; }
+  .section-block {
+    background: var(--glass-bg-strong); border: 1px solid var(--glass-border); border-radius: var(--radius);
+    padding: 20px 22px; margin-bottom: 20px; box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
   .section-title { font-family: Georgia, serif; font-size: 17px; color: var(--teal); margin: 0 0 14px; }
 
   .chart-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
   .chart-label { width: 110px; flex-shrink: 0; color: #4b5c58; font-weight: 600; }
-  .chart-track { flex: 1; background: #eee8d9; border-radius: 20px; height: 16px; overflow: hidden; }
+  .chart-track { flex: 1; background: rgba(15,43,46,.08); border-radius: 20px; height: 16px; overflow: hidden; }
   .chart-fill { height: 100%; border-radius: 20px 0 0 20px; }
-  .chart-fill.lunas { background: #2f8f52; }
-  .chart-fill.dp { background: var(--gold); }
-  .chart-fill.belum { background: var(--danger); }
+  .chart-fill.lunas { background: linear-gradient(90deg,#2f8f52,#4fb572); }
+  .chart-fill.dp { background: linear-gradient(90deg,var(--brass-dark),var(--gold)); }
+  .chart-fill.belum { background: linear-gradient(90deg,#b8493a,var(--danger)); }
   .chart-count { width: 40px; text-align: right; color: #6b6152; flex-shrink: 0; }
 
   table.gel-table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: 'Helvetica Neue', Arial, sans-serif; }
   table.gel-table th { text-align: left; padding: 9px 12px; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: #6b6152; border-bottom: 1px solid var(--line); }
   table.gel-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); }
   table.gel-table tr.active-gel { background: var(--teal-light); }
-  table.gel-table tr:hover { background: #fafaf6; cursor: pointer; }
+  table.gel-table tr:hover { background: rgba(15,110,99,.05); cursor: pointer; }
   .mini-badge { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 12px; margin-right: 4px; display: inline-block; }
-  .mini-lunas { background: #e2f2e6; color: #1f7a3d; }
-  .mini-dp { background: #fbf0da; color: #8a6d2c; }
-  .mini-belum { background: #f6e2df; color: var(--danger); }
+  .mini-lunas { background: #dcf3e3; color: #1f7a3d; }
+  .mini-dp { background: #faf0d6; color: #8a6d2c; }
+  .mini-belum { background: #fbe3de; color: var(--danger); }
 
   /* ---- Global summary table ---- */
   .gs-table { width: 100%; border-collapse: collapse; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; }
-  .gs-table thead tr { background: var(--teal); }
-  .gs-table thead th { padding: 10px 14px; font-size: 11px; font-weight: 700; letter-spacing: .045em; text-transform: uppercase; color: rgba(255,255,255,.9); text-align: left; white-space: nowrap; border: none; }
+  .gs-table thead tr { background: linear-gradient(120deg, #0f6e63, #0a453f); }
+  .gs-table thead th { padding: 10px 14px; font-size: 11px; font-weight: 700; letter-spacing: .045em; text-transform: uppercase; color: rgba(255,255,255,.92); text-align: left; white-space: nowrap; border: none; }
   .gs-table thead th.num { text-align: right; }
   .gs-table tbody tr { border-bottom: 1px solid var(--line); transition: background .13s; }
-  .gs-table tbody tr:hover { background: #f4f1ea; }
+  .gs-table tbody tr:hover { background: rgba(15,110,99,.06); }
   .gs-table tbody tr.gs-wave-row { background: var(--teal-light); }
-  .gs-table tbody tr.gs-wave-row:hover { background: #d8e9e5; }
-  .gs-table tbody tr.gs-total-row { background: #f0ede5; font-weight: 700; border-top: 2px solid var(--brass); }
+  .gs-table tbody tr.gs-wave-row:hover { background: #d3ece6; }
+  .gs-table tbody tr.gs-total-row { background: #f4ecda; font-weight: 700; border-top: 2px solid var(--brass); }
   .gs-table td { padding: 9px 14px; vertical-align: middle; }
   .gs-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .gs-wave-name { font-weight: 700; color: var(--teal); font-size: 13px; }
   .gs-group-list { font-size: 11px; color: #7a7060; margin-top: 3px; line-height: 1.4; }
   .gs-bar-cell { min-width: 100px; }
-  .gs-bar-wrap { background: #e4dfd3; border-radius: 20px; height: 8px; overflow: hidden; margin-top: 2px; }
-  .gs-bar-fill { height: 100%; border-radius: 20px; background: var(--teal); }
+  .gs-bar-wrap { background: rgba(15,43,46,.10); border-radius: 20px; height: 8px; overflow: hidden; margin-top: 2px; }
+  .gs-bar-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg,var(--teal),var(--teal-2)); }
   .gs-pay-pills { display: flex; gap: 4px; flex-wrap: wrap; }
   .gs-pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
-  .gs-pill-lunas { background: #e2f2e6; color: #1a7038; }
-  .gs-pill-dp    { background: #fbf0da; color: #8a6d2c; }
-  .gs-pill-belum { background: #f6e2df; color: var(--danger); }
+  .gs-pill-lunas { background: #dcf3e3; color: #1a7038; }
+  .gs-pill-dp    { background: #faf0d6; color: #8a6d2c; }
+  .gs-pill-belum { background: #fbe3de; color: var(--danger); }
   .gs-stat-strip { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
-  .gs-stat-card  { flex: 1; min-width: 130px; background: var(--teal-light); border-radius: 6px; padding: 14px 18px; border: 1px solid #c8ddd9; }
+  .gs-stat-card  { flex: 1; min-width: 130px; background: var(--teal-light); border-radius: var(--radius-sm); padding: 14px 18px; border: 1px solid #c8e6df; }
   .gs-stat-card .gs-sc-val  { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 26px; font-weight: 700; color: var(--teal); line-height: 1; }
   .gs-stat-card .gs-sc-cap  { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: #5b7470; margin-bottom: 6px; }
   .gs-stat-card .gs-sc-sub  { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; color: #7a9490; margin-top: 4px; }
   .gs-section-label { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6b6152; margin: 0 0 10px; }
 
   .stat-strip { display: flex; gap: 12px; flex-wrap: wrap; margin: 0 0 20px; align-items: center; }
-  .stat-card { background: var(--teal-light); border-radius: 4px; padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+  .stat-card { background: var(--teal-light); border-radius: var(--radius-sm); padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
   .stat-num { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 20px; font-weight: 700; color: var(--teal); line-height: 1; }
   .stat-label { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; color: #5b6d69; margin-top: 2px; }
   .save-status { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: #8a8272; font-style: italic; }
   .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
   .btn-primary {
-    font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--teal); color: #fff; border: none;
-    padding: 10px 20px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(165deg, #16a190, var(--teal) 60%, #0a453f);
+    color: #fff; border: 1px solid rgba(255,255,255,.18);
+    padding: 10px 20px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
     display: inline-flex; align-items: center; gap: 7px; letter-spacing: .03em;
     transition: background .18s ease, box-shadow .18s ease, transform .15s ease;
-    box-shadow: 0 1px 4px rgba(15,76,70,.25);
+    box-shadow: 0 4px 14px rgba(15,76,70,.32), 0 1px 0 rgba(255,255,255,.35) inset;
   }
-  .btn-primary:hover { background: #0b3a35; box-shadow: 0 4px 14px rgba(15,76,70,.35); transform: translateY(-1px); }
-  .btn-primary:active { background: #082e2a; transform: translateY(0) scale(.98); box-shadow: 0 1px 4px rgba(15,76,70,.2); }
+  .btn-primary:hover { box-shadow: 0 8px 22px rgba(15,76,70,.4), 0 1px 0 rgba(255,255,255,.4) inset; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0) scale(.98); box-shadow: 0 2px 8px rgba(15,76,70,.3); }
   .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
   .btn-secondary {
-    font-family: 'Helvetica Neue', Arial, sans-serif; background: transparent; color: var(--teal); border: 1.5px solid var(--teal);
-    padding: 9px 18px; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: 'Helvetica Neue', Arial, sans-serif; background: rgba(255,255,255,.5); color: var(--teal); border: 1.5px solid rgba(15,110,99,.35);
+    padding: 9px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
     display: inline-flex; align-items: center; gap: 7px; letter-spacing: .03em;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     transition: background .18s ease, color .18s ease, box-shadow .18s ease, transform .15s ease;
   }
-  .btn-secondary:hover { background: var(--teal); color: #fff; box-shadow: 0 4px 14px rgba(15,76,70,.25); transform: translateY(-1px); }
+  .btn-secondary:hover { background: var(--teal); color: #fff; box-shadow: 0 6px 18px rgba(15,76,70,.28); transform: translateY(-1px); }
   .btn-secondary:active { transform: translateY(0) scale(.98); box-shadow: none; }
   .search-box { margin-left: auto; position: relative; min-width: 220px; }
-  .search-box input { padding-left: 30px; }
-  .search-icon { position: absolute; left: 10px; top: 11px; color: #8a8272; font-size: 13px; }
-  .table-shell { background: #fff; border: 1px solid var(--line); border-radius: 5px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .search-box input { padding-left: 30px; border-radius: 999px; }
+  .search-icon { position: absolute; left: 11px; top: 11px; color: #8a8272; font-size: 13px; }
+  .table-shell {
+    background: var(--glass-bg-strong); border: 1px solid var(--glass-border); border-radius: var(--radius);
+    overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;
+    box-shadow: var(--glass-shadow); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
   table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: 'Helvetica Neue', Arial, sans-serif; }
-  thead tr { background: var(--teal-light); text-align: left; }
+  thead tr { background: rgba(15,110,99,.08); text-align: left; }
   th { padding: 10px 14px; font-weight: 700; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: #4b5c58; white-space: nowrap; }
   td { padding: 10px 14px; border-top: 1px solid var(--line); }
   tbody tr { transition: background .15s ease; }
-  tbody tr:hover { background: #f4f1ea; }
+  tbody tr:hover { background: rgba(15,110,99,.06); }
   .draggable-row { cursor: grab; }
   .draggable-row.dragging { opacity: 0.4; }
   .draggable-row.drag-over { box-shadow: inset 0 2px 0 var(--teal); }
@@ -367,20 +481,27 @@
   .row-actions button {
     border: none; background: none; cursor: pointer; padding: 4px 6px;
     font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     transition: background .15s ease, transform .15s ease;
   }
   .row-actions button:hover { transform: scale(1.12); }
   .row-actions button:active { transform: scale(.96); }
   .edit-link { color: var(--teal); }
   .del-link { color: var(--danger); }
-  .overlay { position: fixed; inset: 0; background: rgba(28,43,46,0.45); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 50; backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); transition: opacity .2s ease; }
+  .overlay { position: fixed; inset: 0; background: rgba(10,30,28,0.42); display: none; align-items: center; justify-content: center; padding: 16px; z-index: 50; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); transition: opacity .2s ease; }
   .overlay.open { display: flex; animation: overlayIn .2s ease; }
   @keyframes overlayIn {
     from { opacity: 0; }
     to   { opacity: 1; }
   }
-  .modal { background: #fff; border-radius: 8px; width: 100%; max-width: 640px; max-height: 88vh; overflow-y: auto; padding: 26px 28px; font-family: 'Helvetica Neue', Arial, sans-serif; animation: modalIn .22s cubic-bezier(.22,.61,.36,1); }
+  .modal {
+    background: var(--glass-bg-strong); border: 1px solid var(--glass-border); border-radius: var(--radius);
+    width: 100%; max-width: 640px; max-height: 88vh; overflow-y: auto; padding: 26px 28px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    box-shadow: 0 24px 64px rgba(6,30,27,.35), 0 1px 0 rgba(255,255,255,.7) inset;
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    animation: modalIn .22s cubic-bezier(.22,.61,.36,1);
+  }
   @keyframes modalIn {
     from { opacity: 0; transform: translateY(18px) scale(.97); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -397,19 +518,19 @@
 
   .badge { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; display: inline-block; letter-spacing: .02em; transition: opacity .15s ease, transform .15s ease; }
   .badge:hover { opacity: .85; transform: scale(1.05); }
-  .badge-lunas { background: #e2f2e6; color: #1f7a3d; }
-  .badge-dp { background: #fbf0da; color: #8a6d2c; }
-  .badge-belum { background: #f6e2df; color: var(--danger); }
-  .badge-approved { background: #e2f2e6; color: #1f7a3d; }
-  .badge-diajukan { background: #fbf0da; color: #8a6d2c; }
-  .badge-belumvisa { background: #eee; color: #7a7466; }
-  .badge-tiket-ok { background: #e2ecf7; color: #1f5c8a; }
-  .badge-tiket-no { background: #eee; color: #7a7466; }
+  .badge-lunas { background: #dcf3e3; color: #1f7a3d; }
+  .badge-dp { background: #faf0d6; color: #8a6d2c; }
+  .badge-belum { background: #fbe3de; color: var(--danger); }
+  .badge-approved { background: #dcf3e3; color: #1f7a3d; }
+  .badge-diajukan { background: #faf0d6; color: #8a6d2c; }
+  .badge-belumvisa { background: rgba(0,0,0,.06); color: #7a7466; }
+  .badge-tiket-ok { background: #dfeaf7; color: #1f5c8a; }
+  .badge-tiket-no { background: rgba(0,0,0,.06); color: #7a7466; }
 
   .pay-history { font-size: 12px; color: #6b6152; margin-top: 2px; }
   .pay-history:hover { color: var(--teal); }
   .pay-history-row td { padding: 0; border-top: none; }
-  .pay-history-box { background: #fbf9f4; border-top: 1px dashed var(--line); border-bottom: 1px solid var(--line); padding: 14px 18px 14px 34px; }
+  .pay-history-box { background: rgba(15,110,99,.04); border-top: 1px dashed var(--line); border-bottom: 1px solid var(--line); padding: 14px 18px 14px 34px; }
   .pay-history-box table.gel-table th, .pay-history-box table.gel-table td { padding: 7px 10px; font-size: 12.5px; }
 
   #kwitansiPrintArea { display: none; }
@@ -419,7 +540,7 @@
     #kwitansiPrintArea { display: block !important; position: absolute; top: 0; left: 0; width: 100%; padding: 0; }
     @page { margin: 14mm 16mm; }
   }
-  .kw-box { max-width: 720px; margin: 0 auto; font-family: Georgia, serif; color: #111; padding: 0 4px; }
+  .kw-box { max-width: 720px; margin: 0 auto; font-family: Georgia, serif; color: #111; padding: 0 4px; background: #fff; }
   .kw-letterhead { display: flex; align-items: center; gap: 18px; border-bottom: 2.5px solid #111; padding-bottom: 10px; margin-bottom: 4px; }
   .kw-letterhead img { max-width: 220px; height: auto; }
   .kw-letterhead .kw-company-lines { flex: 1; font-family: 'Helvetica Neue', Arial, sans-serif; }
@@ -443,25 +564,37 @@
   .kw-signoff-block .kw-signer-name { font-weight: 700; text-decoration: underline; font-size: 12.5px; white-space: nowrap; }
   .kw-signoff-block .kw-signer-role { margin-top: 3px; white-space: nowrap; }
 
-  .gd-modal { background: #fff; border-radius: 6px; width: 100%; max-width: 400px; padding: 22px 24px; font-family: 'Helvetica Neue', Arial, sans-serif; }
+  .gd-modal {
+    background: var(--glass-bg-strong); border: 1px solid var(--glass-border); border-radius: var(--radius);
+    width: 100%; max-width: 400px; padding: 22px 24px; font-family: 'Helvetica Neue', Arial, sans-serif;
+    box-shadow: 0 24px 64px rgba(6,30,27,.35), 0 1px 0 rgba(255,255,255,.7) inset;
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+  }
   .gd-title { font-size: 15px; font-weight: 700; color: var(--teal); margin-bottom: 12px; }
   .gd-msg { font-size: 13px; color: #4b5c58; margin-bottom: 14px; line-height: 1.5; }
   .gd-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
 
   /* ---- Family / Kolektif Payment Modal ---- */
-  .fam-modal { background: #fff; border-radius: 8px; width: 100%; max-width: 660px; max-height: 90vh; overflow-y: auto; padding: 26px 28px; font-family: 'Helvetica Neue', Arial, sans-serif; animation: modalIn .22s cubic-bezier(.22,.61,.36,1); }
+  .fam-modal {
+    background: var(--glass-bg-strong); border: 1px solid var(--glass-border); border-radius: var(--radius);
+    width: 100%; max-width: 660px; max-height: 90vh; overflow-y: auto; padding: 26px 28px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    box-shadow: 0 24px 64px rgba(6,30,27,.35), 0 1px 0 rgba(255,255,255,.7) inset;
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    animation: modalIn .22s cubic-bezier(.22,.61,.36,1);
+  }
   .fam-section-label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: #6b6152; margin: 0 0 8px; }
-  .fam-member-list { border: 1.5px solid var(--line); border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
+  .fam-member-list { border: 1.5px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 16px; }
   .fam-member-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background .13s; }
   .fam-member-item:last-child { border-bottom: none; }
-  .fam-member-item:hover { background: #f4f1ea; }
+  .fam-member-item:hover { background: rgba(15,110,99,.06); }
   .fam-member-item.selected { background: var(--teal-light); }
   .fam-member-item input[type=checkbox] { width: 16px; height: 16px; flex-shrink: 0; accent-color: var(--teal); cursor: pointer; }
   .fam-member-info { flex: 1; min-width: 0; }
   .fam-member-name { font-weight: 600; font-size: 13.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .fam-member-sub  { font-size: 11.5px; color: #8a8272; margin-top: 2px; }
   .fam-member-harga { font-size: 12px; font-weight: 700; color: var(--teal); white-space: nowrap; flex-shrink: 0; }
-  .fam-total-strip { background: var(--teal-light); border: 1px solid #c8ddd9; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+  .fam-total-strip { background: var(--teal-light); border: 1px solid #c8e6df; border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 16px; font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
   .fam-total-strip b { font-size: 15px; color: var(--teal); }
   .fam-err { color: var(--danger); font-size: 12px; margin-top: 4px; }
   /* Kwitansi kolektif — tabel rincian per anggota */
@@ -472,7 +605,7 @@
   .kw-family-table tr.kw-ft-total td { border-top: 2px solid #111; border-bottom: none; font-weight: 700; }
 
   .app-footer {
-    background: #0d0d0d;
+    background: linear-gradient(180deg, #0d1210, #000);
     color: #b9bfc4;
     font-family: 'EB Garamond', 'Garamond', 'Apple Garamond', Georgia, serif;
     font-size: 15px;
@@ -482,7 +615,7 @@
   }
   .app-footer .brand { color: #f2f2f2; font-weight: 700; letter-spacing: .06em; }
   .app-footer .sep { color: #55585c; margin: 0 12px; }
-  .app-footer .powered { color: #c9a13b; font-weight: 700; }
+  .app-footer .powered { color: var(--gold); font-weight: 700; }
   @media (max-width: 640px) {
     .app-footer { font-size: 12.5px; }
     .app-footer .sep { margin: 0 6px; }
@@ -541,7 +674,7 @@
 
   <!-- Navigasi -->
   <nav class="nav-list" style="flex-direction:column">
-    <button class="nav-item active" id="mobileNavDashboard" data-nav="dashboard">📊 Dashboard</button>
+    <button class="nav-item active" id="mobileNavDashboard" data-nav="dashboard">📊 Dashboard<span id="mobileNavDashboardBadge"></span></button>
     <button class="nav-item" id="mobileNavJamaah" data-nav="jamaah">👥 Data Jamaah</button>
     <button class="nav-item" id="mobileNavPembayaran" data-nav="pembayaran">💳 Pembayaran &amp; Kwitansi</button>
   </nav>
@@ -589,7 +722,7 @@
     </div>
 
     <nav class="nav-list">
-      <button class="nav-item active" id="navDashboard" data-nav="dashboard">📊 Dashboard</button>
+      <button class="nav-item active" id="navDashboard" data-nav="dashboard">📊 Dashboard<span id="navDashboardBadge"></span></button>
       <button class="nav-item" id="navJamaah" data-nav="jamaah">👥 Data Jamaah</button>
       <button class="nav-item" id="navPembayaran" data-nav="pembayaran">💳 Pembayaran &amp; Kwitansi</button>
     </nav>
@@ -618,8 +751,15 @@
   <main class="main-content">
 
     <div id="panelDashboard">
-      <h1 class="page-title" id="dashTitle">Dashboard</h1>
-      <div class="page-sub" id="dashSub">Ringkasan gelombang keberangkatan</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap">
+        <div>
+          <h1 class="page-title" id="dashTitle">Dashboard</h1>
+          <div class="page-sub" id="dashSub">Ringkasan gelombang keberangkatan</div>
+        </div>
+        <button class="sb-btn" id="btnExportDashboardPdf" style="white-space:nowrap">🖨 Ekspor Dashboard ke PDF</button>
+      </div>
+
+      <div class="dash-status-strip" id="dashStatusStrip"></div>
 
       <div class="stat-grid">
         <div class="stat-tile">
@@ -683,15 +823,20 @@
         <div id="chartArea"></div>
       </div>
 
+      <div class="section-block" id="attentionBlock" style="display:none">
+        <h3 class="section-title">⚠ Perlu Perhatian — Gelombang Ini</h3>
+        <div id="attentionArea"></div>
+      </div>
+
       <div class="section-block" style="border-color:var(--brass);border-width:1.5px">
-        <h3 class="section-title">Ringkasan Seluruh Jamaah — Semua Gelombang</h3>
+        <h3 class="section-title">Ringkasan Seluruh Gelombang Keberangkatan</h3>
         <div id="globalStatGrid"></div>
         <div id="monthlyBreakdown"></div>
       </div>
 
       <div class="section-block">
-        <h3 class="section-title">Semua Gelombang Keberangkatan</h3>
-        <div id="gelombangArea"></div>
+        <h3 class="section-title">🕓 Aktivitas Terbaru</h3>
+        <div id="activityFeedArea"></div>
       </div>
     </div>
 
@@ -1536,6 +1681,7 @@ function pilgrimFromDb(row) {
     dateOfExpiry: row.date_of_expiry || '', namaKtp: row.nama_ktp || '', nik: row.nik || '',
     icv: row.status_vaksin, visaStatus: row.status_visa, tiketStatus: row.status_tiket,
     hargaCustom: Number(row.harga_custom) || 0,
+    createdAt: row.created_at || null, // dipakai untuk feed "Aktivitas Terbaru" di dashboard
   };
 }
 
@@ -1546,10 +1692,26 @@ function hargaEfektif(jamaahId) {
   const custom = j && j.hargaCustom > 0 ? j.hargaCustom : 0;
   return custom > 0 ? custom : parseAngka(g.hargaPaket);
 }
+// Versi generik hargaEfektif yang bisa dipakai lintas-gelombang (untuk
+// ringkasan finansial global di dashboard, bukan cuma gelombang aktif).
+function hargaEfektifInGroup(gg, jamaahId) {
+  const j = (gg.jamaah || []).find(x => x.id === jamaahId);
+  const custom = j && j.hargaCustom > 0 ? j.hargaCustom : 0;
+  return custom > 0 ? custom : parseAngka(gg.hargaPaket);
+}
+// Selisih hari dari hari ini ke tanggal (positif = di masa depan).
+function selisihHari(iso) {
+  const d = parseIsoDateLocal(iso);
+  if (!d) return null;
+  const now = new Date();
+  const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((d - today0) / 86400000);
+}
 function paymentFromDb(row) {
   return {
     id: row.id, tanggal: row.tanggal, jumlah: Number(row.jumlah), jenis: row.jenis,
     metode: row.metode, catatan: row.catatan || '', noKwitansi: row.no_kwitansi,
+    createdAt: row.created_at || null, // dipakai untuk feed "Aktivitas Terbaru" di dashboard
   };
 }
 
@@ -1852,13 +2014,6 @@ function handleGroupChange() {
   renderTable();
 }
 
-function setActiveGroupFromDashboard(id) {
-  activeGroupId = id;
-  document.getElementById('groupSelect').value = id;
-  applyActiveGroupToForm();
-  renderTable();
-}
-
 function switchNav(nav) {
   ['dashboard','jamaah','pembayaran'].forEach(n => {
     document.getElementById('panel' + n.charAt(0).toUpperCase() + n.slice(1)).style.display = (n === nav) ? '' : 'none';
@@ -1866,6 +2021,29 @@ function switchNav(nav) {
   });
   if (nav === 'pembayaran') renderPaymentTable();
   if (nav === 'dashboard') renderDashboard();
+}
+
+// Dipanggil dari link "Lihat →" di daftar "Perlu Perhatian" pada dashboard —
+// pindah ke tab Data Jamaah dan langsung filter ke nama yang bersangkutan.
+function gotoJamaahAndSearch(nama) {
+  switchNav('jamaah');
+  syncMobileNavActive('jamaah');
+  const input = document.getElementById('searchInput');
+  input.value = nama;
+  renderTable();
+  input.focus();
+}
+
+// Ekspor panel Dashboard sebagai PDF lewat dialog print browser — hanya
+// panel Dashboard yang ditampilkan, sidebar/panel lain disembunyikan
+// lewat CSS @media print (lihat class body.print-dashboard).
+function exportDashboardPdf() {
+  document.body.classList.add('print-dashboard');
+  const cleanup = () => document.body.classList.remove('print-dashboard');
+  window.addEventListener('afterprint', cleanup, { once: true });
+  window.print();
+  // Fallback kalau event afterprint tidak terpicu di browser tertentu.
+  setTimeout(cleanup, 2000);
 }
 
 // Parser tanggal "aman zona-waktu" untuk string tanggal murni (YYYY-MM-DD).
@@ -3336,6 +3514,35 @@ function renderDashboard() {
   document.getElementById('dashBelumInput').textContent = kuota > 0 ? belum : '—';
   document.getElementById('dashHarga').textContent = g.hargaPaket ? formatRupiah(g.hargaPaket) : '—';
 
+  // ── Status strip: countdown keberangkatan + kesiapan berangkat ──────────
+  const hariMenuju = selisihHari(g.tglBerangkat);
+  let countdownCls = 'neutral', countdownNum = '—', countdownTxt = 'Tanggal keberangkatan belum diatur';
+  if (hariMenuju !== null) {
+    if (hariMenuju > 0) { countdownCls = hariMenuju <= 14 ? 'warn' : ''; countdownNum = 'H-' + hariMenuju; countdownTxt = `Keberangkatan ${formatTanggal(g.tglBerangkat)}`; }
+    else if (hariMenuju === 0) { countdownCls = 'warn'; countdownNum = 'Hari Ini'; countdownTxt = `Berangkat hari ini — ${formatTanggal(g.tglBerangkat)}`; }
+    else { countdownCls = 'neutral'; countdownNum = 'Selesai'; countdownTxt = `Sudah berangkat ${formatTanggal(g.tglBerangkat)}`; }
+  }
+  const siap = jamaah.filter(j => {
+    const bayarOk = statusPembayaran(j.id) === 'lunas';
+    const paspOk  = statusPaspor(j.dateOfExpiry, g.tglBerangkat).level === 'ok';
+    return bayarOk && j.visaStatus === 'Approved' && j.tiketStatus === 'Sudah Terbit' && paspOk;
+  }).length;
+  const siapPct = total > 0 ? Math.round(siap / total * 100) : 0;
+
+  document.getElementById('dashStatusStrip').innerHTML = `
+    <div class="dash-status-card ${countdownCls}">
+      <div class="dash-status-num">${countdownNum}</div>
+      <div class="dash-status-txt"><b>Countdown Keberangkatan</b>${escapeHtml(countdownTxt)}</div>
+    </div>
+    <div class="dash-readiness-card">
+      <div class="dash-readiness-top"><span>Kesiapan Jamaah</span><b>${siap} / ${total || 0}</b></div>
+      <div class="dash-readiness-track"><div class="dash-readiness-fill" style="width:${siapPct}%"></div></div>
+      <div style="font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:#8a8272;margin-top:6px">
+        ${total === 0 ? 'Belum ada jamaah pada gelombang ini' : `${siapPct}% lengkap: lunas, visa approved, tiket terbit &amp; paspor aman`}
+      </div>
+    </div>
+  `;
+
   const hargaPaket = parseAngka(g.hargaPaket);
   const totalNilaiPaket = hargaPaket * total;
   document.getElementById('dashTotalNilai').textContent = hargaPaket > 0 ? formatRupiah(totalNilaiPaket) : '—';
@@ -3361,169 +3568,97 @@ function renderDashboard() {
   document.getElementById('dashPasp').textContent = paspBermasalah;
   document.getElementById('dashPaspTile').style.background = paspBermasalah > 0 ? '#f9ece9' : '#fff';
 
-
   let lunas = 0, dp = 0, belumBayar = 0;
   jamaah.forEach(j => {
     const s = statusPembayaran(j.id);
     if (s === 'lunas') lunas++; else if (s === 'dp') dp++; else belumBayar++;
   });
-  const maxCount = Math.max(lunas, dp, belumBayar, 1);
   const chart = document.getElementById('chartArea');
   if (total === 0) {
     chart.innerHTML = `<div class="empty-text" style="padding:10px 0">Belum ada data jamaah pada gelombang ini.</div>`;
   } else {
+    const pL = lunas / total * 100, pD = dp / total * 100, pB = belumBayar / total * 100;
+    const gradient = `conic-gradient(#2f8f52 0% ${pL}%, #c99a3e ${pL}% ${pL+pD}%, #c0574a ${pL+pD}% 100%)`;
     chart.innerHTML = `
-      <div class="chart-row"><div class="chart-label">Lunas</div><div class="chart-track"><div class="chart-fill lunas" style="width:${(lunas/maxCount*100)}%"></div></div><div class="chart-count">${lunas}</div></div>
-      <div class="chart-row"><div class="chart-label">DP</div><div class="chart-track"><div class="chart-fill dp" style="width:${(dp/maxCount*100)}%"></div></div><div class="chart-count">${dp}</div></div>
-      <div class="chart-row"><div class="chart-label">Belum Bayar</div><div class="chart-track"><div class="chart-fill belum" style="width:${(belumBayar/maxCount*100)}%"></div></div><div class="chart-count">${belumBayar}</div></div>
+      <div class="donut-wrap">
+        <div class="donut" style="background:${gradient}"><div class="donut-center"><b>${total}</b><span>Jamaah</span></div></div>
+        <div class="donut-legend">
+          <div class="donut-legend-row"><span class="donut-dot" style="background:#2f8f52"></span>Lunas<b>${lunas}</b></div>
+          <div class="donut-legend-row"><span class="donut-dot" style="background:#c99a3e"></span>DP<b>${dp}</b></div>
+          <div class="donut-legend-row"><span class="donut-dot" style="background:#c0574a"></span>Belum Bayar<b>${belumBayar}</b></div>
+        </div>
+      </div>
     `;
   }
 
-  const gelArea = document.getElementById('gelombangArea');
-  const ids = Object.keys(groups);
-
-  // --- Grup berdasarkan bulan keberangkatan (satu gelombang = satu bulan) ---
-  const waveMap = {}; // key: 'YYYY-MM' atau '' (tanpa tanggal)
-  ids.forEach(id => {
-    const gg = migrateGroup(groups[id]);
-    const key = gg.tglBerangkat ? gg.tglBerangkat.slice(0, 7) : '';
-    if (!waveMap[key]) waveMap[key] = [];
-    waveMap[key].push({ id, gg });
+  // ── Perlu Perhatian: daftar jamaah paspor bermasalah pada gelombang ini ──
+  const attnBlock = document.getElementById('attentionBlock');
+  const attnArea = document.getElementById('attentionArea');
+  const bermasalah = jamaah.filter(j => {
+    const st = statusPaspor(j.dateOfExpiry, g.tglBerangkat);
+    return st.level === 'expired' || st.level === 'warning';
   });
-
-  // Urutkan: bulan terdekat dulu, tanpa tanggal di akhir
-  const waveKeys = Object.keys(waveMap).filter(k => k !== '').sort();
-  if (waveMap['']) waveKeys.push('');
-
-  let gelRowsHtml = '';
-  let waveNum = 0;
-  waveKeys.forEach(key => {
-    waveNum++;
-    const entries = waveMap[key];
-    let waveLabel, waveDateRange;
-    if (key) {
-      const [y, m] = key.split('-');
-      const bulanNama = BULAN_ID[parseInt(m, 10) - 1];
-      waveLabel = `Gelombang ${waveNum} — ${bulanNama} ${y}`;
-      // Rentang tanggal keberangkatan dalam gelombang ini
-      const dates = entries.map(e => e.gg.tglBerangkat).filter(Boolean).sort();
-      if (dates.length === 1) {
-        waveDateRange = formatTanggal(dates[0]);
-      } else if (dates.length > 1) {
-        const first = formatTanggal(dates[0]);
-        const last  = formatTanggal(dates[dates.length - 1]);
-        waveDateRange = first === last ? first : first + ' – ' + last;
-      } else {
-        waveDateRange = '—';
-      }
-    } else {
-      waveLabel = `Gelombang — (Tanggal Belum Diisi)`;
-      waveDateRange = '—';
-    }
-
-    // Hitung total jamaah & status bayar untuk seluruh group dalam gelombang ini
-    let totalJ = 0, totalL = 0, totalD = 0, totalB = 0;
-    const activeInWave = entries.some(e => e.id === activeGroupId);
-    entries.forEach(({ gg }) => {
-      gg.jamaah.forEach(j => {
-        totalJ++;
-        const list = (gg.payments[j.id] || []);
-        const harga = parseAngka(gg.hargaPaket);
-        const dibayar = list.reduce((s,p)=>s+parseAngka(p.jumlah),0);
-        const adaPelunasan = list.some(p => p.jenis === 'Pelunasan (Lunas)');
-        if (adaPelunasan || (harga>0 && dibayar>=harga)) totalL++;
-        else if (dibayar>0) totalD++;
-        else totalB++;
-      });
-    });
-
-    // Baris header gelombang
-    gelRowsHtml += `
-      <tr style="background:var(--teal-light)">
-        <td colspan="5" style="font-weight:700;font-size:13px;color:var(--teal);padding:10px 12px">
-          ${escapeHtml(waveLabel)}
-        </td>
-      </tr>
-    `;
-
-    // Baris tiap group dalam gelombang ini
-    entries.forEach(({ id, gg }) => {
-      const jCount = gg.jamaah.length;
-      let l=0,d=0,b=0;
-      gg.jamaah.forEach(j => {
-        const list = (gg.payments[j.id] || []);
-        const harga = parseAngka(gg.hargaPaket);
-        const dibayar = list.reduce((s,p)=>s+parseAngka(p.jumlah),0);
-        const adaPelunasan = list.some(p => p.jenis === 'Pelunasan (Lunas)');
-        if (adaPelunasan || (harga>0 && dibayar>=harga)) l++; else if (dibayar>0) d++; else b++;
-      });
-      gelRowsHtml += `
-        <tr class="${id === activeGroupId ? 'active-gel' : ''}" onclick="setActiveGroupFromDashboard('${id}')" style="cursor:pointer">
-          <td style="font-weight:600;padding-left:24px">↳ ${escapeHtml(gg.label)}</td>
-          <td>${gg.tglBerangkat ? formatTanggal(gg.tglBerangkat) : '—'}</td>
-          <td>${jCount}${gg.kuotaJamaah ? ' / ' + gg.kuotaJamaah : ''}</td>
-          <td>${gg.hargaPaket ? formatRupiah(gg.hargaPaket) : '—'}</td>
-          <td>
-            <span class="mini-badge mini-lunas">${l} Lunas</span>
-            <span class="mini-badge mini-dp">${d} DP</span>
-            <span class="mini-badge mini-belum">${b} Belum</span>
-          </td>
-        </tr>
-      `;
-    });
-
-    // Baris ringkasan gelombang jika lebih dari 1 group
-    if (entries.length > 1) {
-      gelRowsHtml += `
-        <tr style="background:#f7f4ed;font-style:italic;color:#6b6152;font-size:12px">
-          <td style="padding-left:24px;color:#4b5c58;font-weight:600">Total Gelombang ini</td>
-          <td>${waveDateRange}</td>
-          <td>${totalJ}</td>
-          <td>—</td>
-          <td>
-            <span class="mini-badge mini-lunas">${totalL} Lunas</span>
-            <span class="mini-badge mini-dp">${totalD} DP</span>
-            <span class="mini-badge mini-belum">${totalB} Belum</span>
-          </td>
-        </tr>
-      `;
-    }
-  });
-
-  gelArea.innerHTML = `
-    <table class="gel-table">
-      <thead><tr><th>Group / Gelombang</th><th>Keberangkatan</th><th>Jamaah</th><th>Harga Paket</th><th>Status Bayar</th></tr></thead>
-      <tbody>${gelRowsHtml}</tbody>
-    </table>
-  `;
+  if (bermasalah.length === 0) {
+    attnBlock.style.display = 'none';
+  } else {
+    attnBlock.style.display = '';
+    attnArea.innerHTML = bermasalah.map(j => {
+      const st = statusPaspor(j.dateOfExpiry, g.tglBerangkat);
+      return `
+        <div class="attn-row">
+          <div><div class="attn-name">${escapeHtml(j.namaPaspor)}</div><div class="attn-reason">${st.level === 'expired' ? '⛔' : '⚠️'} ${escapeHtml(st.label)}</div></div>
+          <div class="attn-link" onclick="gotoJamaahAndSearch('${escapeHtml(j.namaPaspor).replace(/'/g,"\\'")}')">Lihat →</div>
+        </div>`;
+    }).join('');
+  }
 
   renderGlobalSummary();
 }
 
 const BULAN_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 
+// Ringkasan lintas-gelombang: satu baris per GELOMBANG (bulan keberangkatan),
+// bukan per group — beberapa group pada bulan yang sama digabung jadi satu baris.
 function renderGlobalSummary() {
   const allGroupIds = Object.keys(groups);
 
-  // ── 1. Kumpulkan data per bulan keberangkatan ────────────────────────────
-  // waveData: { key: 'YYYY-MM'|'', groups: [{id,label,tgl,jCount,lunas,dp,belum,kuota,harga}] }
   const waveOrder = []; // urut YYYY-MM lalu '' di akhir
-  const waveData  = {};
+  const waveData  = {}; // { key: { groups: [...] } }
+
+  let grandKontrak = 0, grandDiterima = 0;
+  let perluDitagihSegera = 0;   // belum lunas & keberangkatan gelombangnya ≤30 hari lagi
+  let paspBermasalahGlobal = 0; // dipakai untuk badge notifikasi di menu Dashboard
+  const activityEvents = [];    // {type:'jamaah'|'bayar', ts, label, sub}
 
   allGroupIds.forEach(id => {
     const gg = migrateGroup(groups[id]);
     const key = gg.tglBerangkat ? gg.tglBerangkat.slice(0, 7) : '';
     if (!waveData[key]) { waveData[key] = { groups: [] }; waveOrder.push(key); }
 
+    const hariMenujuGrup = selisihHari(gg.tglBerangkat);
+
     let lunas = 0, dp = 0, belum = 0;
     gg.jamaah.forEach(j => {
-      const list  = gg.payments[j.id] || [];
-      const harga = parseAngka(gg.hargaPaket);
-      const paid  = list.reduce((s, p) => s + parseAngka(p.jumlah), 0);
-      const full  = list.some(p => p.jenis === 'Pelunasan (Lunas)');
-      if (full || (harga > 0 && paid >= harga)) lunas++;
+      const list   = gg.payments[j.id] || [];
+      const harga  = hargaEfektifInGroup(gg, j.id);
+      const paid   = list.reduce((s, p) => s + parseAngka(p.jumlah), 0);
+      const full   = list.some(p => p.jenis === 'Pelunasan (Lunas)');
+      const isLunas = full || (harga > 0 && paid >= harga);
+      if (isLunas) lunas++;
       else if (paid > 0) dp++;
       else belum++;
+
+      grandKontrak  += harga;
+      grandDiterima += paid;
+      if (!isLunas && hariMenujuGrup !== null && hariMenujuGrup >= 0 && hariMenujuGrup <= 30) perluDitagihSegera++;
+
+      const stPasp = statusPaspor(j.dateOfExpiry, gg.tglBerangkat);
+      if (stPasp.level === 'expired' || stPasp.level === 'warning') paspBermasalahGlobal++;
+
+      if (j.createdAt) activityEvents.push({ type: 'jamaah', ts: j.createdAt, label: `${j.namaPaspor} ditambahkan`, sub: gg.label });
+      list.forEach(p => {
+        if (p.createdAt) activityEvents.push({ type: 'bayar', ts: p.createdAt, label: `Pembayaran ${formatRupiah(p.jumlah)} — ${j.namaPaspor}`, sub: `${gg.label} · ${p.jenis}` });
+      });
     });
 
     waveData[key].groups.push({
@@ -3535,6 +3670,7 @@ function renderGlobalSummary() {
       harga: parseAngka(gg.hargaPaket),
     });
   });
+  const grandPiutang = Math.max(grandKontrak - grandDiterima, 0);
 
   // Urutkan: bulan ascending, tanpa tanggal di akhir
   waveOrder.sort((a, b) => {
@@ -3544,10 +3680,9 @@ function renderGlobalSummary() {
     return a.localeCompare(b);
   });
 
-  // ── 2. Hitung grand total ────────────────────────────────────────────────
+  // ── Grand total ───────────────────────────────────────────────────────────
   let gtJamaah = 0, gtLunas = 0, gtDp = 0, gtBelum = 0;
-  const totalGelombang = waveOrder.filter(k => k !== '').length + (waveData[''] ? 1 : 0);
-  const totalGroup     = allGroupIds.length;
+  const totalGelombang = waveOrder.length;
 
   waveOrder.forEach(key => {
     waveData[key].groups.forEach(g => {
@@ -3562,7 +3697,7 @@ function renderGlobalSummary() {
   const pctDp    = gtJamaah > 0 ? Math.round(gtDp    / gtJamaah * 100) : 0;
   const pctBelum = gtJamaah > 0 ? Math.round(gtBelum / gtJamaah * 100) : 0;
 
-  // ── 3. Stat cards (atas) ─────────────────────────────────────────────────
+  // ── Stat cards (atas) ───────────────────────────────────────────────────
   document.getElementById('globalStatGrid').innerHTML = `
     <div class="gs-stat-strip">
       <div class="gs-stat-card">
@@ -3573,7 +3708,7 @@ function renderGlobalSummary() {
       <div class="gs-stat-card">
         <div class="gs-sc-cap">Total Gelombang</div>
         <div class="gs-sc-val">${totalGelombang}</div>
-        <div class="gs-sc-sub">${totalGroup} group terdaftar</div>
+        <div class="gs-sc-sub">keberangkatan terjadwal</div>
       </div>
       <div class="gs-stat-card" style="border-color:#b8dcc4">
         <div class="gs-sc-cap">Lunas</div>
@@ -3591,9 +3726,62 @@ function renderGlobalSummary() {
         <div class="gs-sc-sub">${pctBelum}% dari total jamaah</div>
       </div>
     </div>
+    <div class="gs-section-label" style="margin-top:16px">Wawasan Finansial — Seluruh Gelombang</div>
+    <div class="gs-stat-strip">
+      <div class="gs-stat-card" style="border-color:#c8ddd9">
+        <div class="gs-sc-cap">Total Nilai Kontrak</div>
+        <div class="gs-sc-val" style="font-size:19px">${grandKontrak > 0 ? formatRupiah(grandKontrak) : '—'}</div>
+        <div class="gs-sc-sub">harga paket × seluruh jamaah</div>
+      </div>
+      <div class="gs-stat-card" style="border-color:#b8dcc4">
+        <div class="gs-sc-cap">Total Sudah Diterima</div>
+        <div class="gs-sc-val" style="font-size:19px;color:#1a7038">${grandDiterima > 0 ? formatRupiah(grandDiterima) : '—'}</div>
+        <div class="gs-sc-sub">${grandKontrak > 0 ? Math.round(grandDiterima/grandKontrak*100) : 0}% dari total kontrak</div>
+      </div>
+      <div class="gs-stat-card" style="border-color:#e0b8b4">
+        <div class="gs-sc-cap">Total Piutang</div>
+        <div class="gs-sc-val" style="font-size:19px;color:var(--danger)">${grandPiutang > 0 ? formatRupiah(grandPiutang) : '—'}</div>
+        <div class="gs-sc-sub">belum tertagih dari seluruh jamaah</div>
+      </div>
+      <div class="gs-stat-card" style="border-color:#e0d0a8">
+        <div class="gs-sc-cap">Perlu Ditagih Segera</div>
+        <div class="gs-sc-val" style="color:#8a6d2c">${perluDitagihSegera}</div>
+        <div class="gs-sc-sub">belum lunas &amp; berangkat ≤30 hari lagi</div>
+      </div>
+    </div>
   `;
 
-  // ── 4. Tabel per-gelombang ───────────────────────────────────────────────
+  // ── Badge notifikasi paspor bermasalah di menu Dashboard ─────────────────
+  ['navDashboardBadge', 'mobileNavDashboardBadge'].forEach(elId => {
+    const el = document.getElementById(elId);
+    if (el) el.innerHTML = paspBermasalahGlobal > 0 ? `<span class="nav-badge">${paspBermasalahGlobal}</span>` : '';
+  });
+
+  // ── Aktivitas terbaru: gabungan jamaah baru + pembayaran masuk ───────────
+  const feedArea = document.getElementById('activityFeedArea');
+  if (feedArea) {
+    activityEvents.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+    const top = activityEvents.slice(0, 8);
+    if (!top.length) {
+      feedArea.innerHTML = `<div class="empty-text" style="padding:6px 0">Belum ada aktivitas tercatat.</div>`;
+    } else {
+      feedArea.innerHTML = top.map(ev => {
+        const d = new Date(ev.ts);
+        const waktu = isNaN(d) ? '' : `${formatTanggal(ev.ts.slice(0,10))} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const icon = ev.type === 'bayar' ? '💰' : '🧑';
+        return `
+          <div class="activity-row">
+            <div class="activity-icon">${icon}</div>
+            <div class="activity-txt">
+              <div><b>${escapeHtml(ev.label)}</b></div>
+              <div class="activity-time">${escapeHtml(ev.sub)} · ${escapeHtml(waktu)}</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+  }
+
+  // ── Tabel: satu baris per gelombang (agregat semua group di bulan itu) ──
   const wrap = document.getElementById('monthlyBreakdown');
   if (!waveOrder.length) {
     wrap.innerHTML = `<div class="empty-text" style="padding:10px 0">Belum ada data jamaah di gelombang mana pun.</div>`;
@@ -3612,11 +3800,10 @@ function renderGlobalSummary() {
     const entry   = waveData[key];
     const isNoDate = key === '';
 
-    // Hitung total per gelombang
+    // Total per gelombang (gabungan seluruh group pada bulan ini)
     let wJamaah = 0, wLunas = 0, wDp = 0, wBelum = 0;
     entry.groups.forEach(g => { wJamaah += g.jCount; wLunas += g.lunas; wDp += g.dp; wBelum += g.belum; });
 
-    // Label gelombang
     let waveName, wavePeriod;
     if (!isNoDate) {
       const [y, mo] = key.split('-');
@@ -3627,18 +3814,14 @@ function renderGlobalSummary() {
       wavePeriod = '—';
     }
 
-    // Nama group sebagai sub-teks
-    const groupNames = entry.groups.map(g => escapeHtml(g.label)).join(', ');
-    const barPct     = Math.round(wJamaah / maxJamaah * 100);
-
-    // Persen lunas dalam gelombang ini
+    const barPct    = Math.round(wJamaah / maxJamaah * 100);
     const wPctLunas = wJamaah > 0 ? Math.round(wLunas / wJamaah * 100) : 0;
 
     tbodyRows += `
       <tr class="gs-wave-row">
         <td>
           <div class="gs-wave-name">${escapeHtml(waveName)}</div>
-          <div class="gs-group-list">📅 ${wavePeriod} &nbsp;·&nbsp; ${entry.groups.length} group: ${groupNames}</div>
+          <div class="gs-group-list">📅 ${wavePeriod}</div>
         </td>
         <td class="num gs-bar-cell">
           <div style="font-weight:700;font-size:14px">${wJamaah}</div>
@@ -3695,7 +3878,9 @@ function renderGlobalSummary() {
   `;
 }
 
+
 document.getElementById('navDashboard').addEventListener('click', () => switchNav('dashboard'));
+document.getElementById('btnExportDashboardPdf').addEventListener('click', exportDashboardPdf);
 document.getElementById('navJamaah').addEventListener('click', () => switchNav('jamaah'));
 document.getElementById('navPembayaran').addEventListener('click', () => switchNav('pembayaran'));
 
